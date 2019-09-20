@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
-import QRLink from './QRLink';
 import debug from './debug';
 
 const ICE_GATHERING_TIMEOUT = 2000;
 
-const Host: React.FC = () => {
-  const [offerUrl, setOfferUrl] = useState<string>();
-
+const Player: React.FC<{ encodedOffer: string }> = ({ encodedOffer }) => {
+  const [answer, setAnswer] = useState<string>();
   async function init() {
     const pc = new RTCPeerConnection({
       iceServers: [{ urls: ['stun:stunserver.org'] }],
     });
     debug(pc);
-
-    pc.createDataChannel('testing');
 
     const iceGatheringComplete = new Promise(resolve => {
       pc.addEventListener('icegatheringstatechange', () => {
@@ -29,14 +25,15 @@ const Host: React.FC = () => {
 
     const signalingStatusComplete = new Promise(resolve => {
       pc.addEventListener('signalingstatechange', () => {
-        if (pc.signalingState === 'have-local-offer') {
+        if (pc.signalingState === 'stable') {
           resolve();
         }
       });
     });
 
-    pc.createOffer().then(offer => {
-      pc.setLocalDescription(offer);
+    pc.setRemoteDescription(JSON.parse(atob(encodedOffer)));
+    pc.createAnswer().then(answer => {
+      pc.setLocalDescription(answer);
     });
 
     await Promise.all([
@@ -44,19 +41,16 @@ const Host: React.FC = () => {
       signalingStatusComplete,
     ]).then(() => {
       const { localDescription: description } = pc;
-      setOfferUrl(
-        `${window.location.href}player/${btoa(JSON.stringify(description))}`,
-      );
+      setAnswer(btoa(JSON.stringify(description)));
     });
   }
-
   return (
-    <section>
-      <p>Host</p>
-      <button onClick={init}>Start new game!</button>
-      {offerUrl && <QRLink url={offerUrl} />}
-    </section>
+    <div>
+      <p>Player time!</p>
+      <button onClick={init}>Generate answer</button>
+      {answer && <textarea>{answer}</textarea>}
+    </div>
   );
 };
 
-export default Host;
+export default Player;
