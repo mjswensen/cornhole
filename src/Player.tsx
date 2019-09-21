@@ -41,7 +41,7 @@ async function init(
 const Player: React.FC<{ encodedOffer: string }> = ({ encodedOffer }) => {
   const [answer, setAnswer] = useState<string>();
 
-  const pc = useConnection(true);
+  const [pc, channel, connected] = useConnection(true);
 
   return (
     <div>
@@ -56,6 +56,7 @@ const Player: React.FC<{ encodedOffer: string }> = ({ encodedOffer }) => {
         Generate answer
       </button>
       {answer && <textarea readOnly value={answer} />}
+      <h1>Connected: {connected.toString()}</h1>
     </div>
   );
 };

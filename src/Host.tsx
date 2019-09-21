@@ -7,8 +7,6 @@ async function init(
 ): Promise<RTCSessionDescription | null> {
   const ICE_GATHERING_TIMEOUT = 2000;
 
-  pc.createDataChannel('testing');
-
   const iceGatheringComplete = new Promise(resolve => {
     pc.addEventListener('icegatheringstatechange', () => {
       if (pc.iceGatheringState === 'complete') {
@@ -44,7 +42,7 @@ async function init(
 const Host: React.FC = () => {
   const [offerUrl, setOfferUrl] = useState<string>();
 
-  const pc = useConnection(true);
+  const [pc, channel, connected] = useConnection(true);
 
   return (
     <section>
@@ -74,6 +72,7 @@ const Host: React.FC = () => {
           ></textarea>
         </>
       )}
+      <h1>Connected: {connected.toString()}</h1>
     </section>
   );
 };

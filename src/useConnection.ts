@@ -1,44 +1,75 @@
-import { useEffect, useRef, MutableRefObject } from 'react';
+import { useEffect, useRef, MutableRefObject, useState } from 'react';
 
-function useConnection(debug = false): RTCPeerConnection {
-  const pc: MutableRefObject<RTCPeerConnection> = useRef(
+function useConnection(
+  debug = false,
+): [RTCPeerConnection, RTCDataChannel, boolean] {
+  const pcRef: MutableRefObject<RTCPeerConnection> = useRef(
     new RTCPeerConnection({
       iceServers: [{ urls: ['stun:stunserver.org'] }],
     }),
   );
+
+  const pc = pcRef.current;
+
+  const channelRef: MutableRefObject<RTCDataChannel> = useRef(
+    pc.createDataChannel('cornhole'),
+  );
+
+  const channel = channelRef.current;
+
+  const [connected, setConnected] = useState(false);
+
+  useEffect(() => {
+    const setConnectedTrue = () => {
+      setConnected(true);
+    };
+    channel.addEventListener('open', setConnectedTrue);
+    return () => {
+      channel.removeEventListener('open', setConnectedTrue);
+    };
+  }, [channel]);
 
   useEffect(() => {
     if (debug) {
       const log = (...args: any[]) => {
         console.log(...args);
       };
-      const conn = pc.current;
-      conn.addEventListener('connectionstatechange', log);
-      conn.addEventListener('datachannel', log);
-      conn.addEventListener('icecandidate', log);
-      conn.addEventListener('icecandidateerror', log);
-      conn.addEventListener('iceconnectionstatechange', log);
-      conn.addEventListener('icegatheringstatechange', log);
-      conn.addEventListener('negotiationneeded', log);
-      conn.addEventListener('signalingstatechange', log);
-      conn.addEventListener('statsended', log);
-      conn.addEventListener('track', log);
+      pc.addEventListener('connectionstatechange', log);
+      pc.addEventListener('datachannel', log);
+      pc.addEventListener('icecandidate', log);
+      pc.addEventListener('icecandidateerror', log);
+      pc.addEventListener('iceconnectionstatechange', log);
+      pc.addEventListener('icegatheringstatechange', log);
+      pc.addEventListener('negotiationneeded', log);
+      pc.addEventListener('signalingstatechange', log);
+      pc.addEventListener('statsended', log);
+      pc.addEventListener('track', log);
+      channel.addEventListener('open', log);
+      channel.addEventListener('message', log);
+      channel.addEventListener('close', log);
+      channel.addEventListener('error', log);
+      channel.addEventListener('bufferedamountlow', log);
       return function() {
-        conn.removeEventListener('connectionstatechange', log);
-        conn.removeEventListener('datachannel', log);
-        conn.removeEventListener('icecandidate', log);
-        conn.removeEventListener('icecandidateerror', log);
-        conn.removeEventListener('iceconnectionstatechange', log);
-        conn.removeEventListener('icegatheringstatechange', log);
-        conn.removeEventListener('negotiationneeded', log);
-        conn.removeEventListener('signalingstatechange', log);
-        conn.removeEventListener('statsended', log);
-        conn.removeEventListener('track', log);
+        pc.removeEventListener('connectionstatechange', log);
+        pc.removeEventListener('datachannel', log);
+        pc.removeEventListener('icecandidate', log);
+        pc.removeEventListener('icecandidateerror', log);
+        pc.removeEventListener('iceconnectionstatechange', log);
+        pc.removeEventListener('icegatheringstatechange', log);
+        pc.removeEventListener('negotiationneeded', log);
+        pc.removeEventListener('signalingstatechange', log);
+        pc.removeEventListener('statsended', log);
+        pc.removeEventListener('track', log);
+        channel.removeEventListener('open', log);
+        channel.removeEventListener('message', log);
+        channel.removeEventListener('close', log);
+        channel.removeEventListener('error', log);
+        channel.removeEventListener('bufferedamountlow', log);
       };
     }
-  }, [debug]);
+  }, [debug, pc, channel]);
 
-  return pc.current;
+  return [pcRef.current, channelRef.current, connected];
 }
 
 export default useConnection;
