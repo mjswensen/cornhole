@@ -57,7 +57,8 @@ const Host: React.FC = () => {
           <p>Paste answer here:</p>
           <textarea
             onChange={evt => {
-              // TODO: start here.
+              const answer = JSON.parse(atob(evt.target.value));
+              pc.setRemoteDescription(answer);
             }}
           ></textarea>
         </>
