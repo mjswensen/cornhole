@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import QRLink from './QRLink';
-import debug from './debug';
+import useConnection from './useConnection';
 
 const ICE_GATHERING_TIMEOUT = 2000;
 
 const Host: React.FC = () => {
   const [offerUrl, setOfferUrl] = useState<string>();
 
-  async function init() {
-    const pc = new RTCPeerConnection({
-      iceServers: [{ urls: ['stun:stunserver.org'] }],
-    });
-    debug(pc);
+  const pc = useConnection(true);
 
+  async function init() {
     pc.createDataChannel('testing');
 
     const iceGatheringComplete = new Promise(resolve => {
@@ -54,7 +51,17 @@ const Host: React.FC = () => {
     <section>
       <p>Host</p>
       <button onClick={init}>Start new game!</button>
-      {offerUrl && <QRLink url={offerUrl} />}
+      {offerUrl && (
+        <>
+          <QRLink url={offerUrl} />
+          <p>Paste answer here:</p>
+          <textarea
+            onChange={evt => {
+              // TODO: start here.
+            }}
+          ></textarea>
+        </>
+      )}
     </section>
   );
 };

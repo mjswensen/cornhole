@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import debug from './debug';
+import useConnection from './useConnection';
 
 const ICE_GATHERING_TIMEOUT = 2000;
 
 const Player: React.FC<{ encodedOffer: string }> = ({ encodedOffer }) => {
   const [answer, setAnswer] = useState<string>();
-  async function init() {
-    const pc = new RTCPeerConnection({
-      iceServers: [{ urls: ['stun:stunserver.org'] }],
-    });
-    debug(pc);
 
+  const pc = useConnection(true);
+
+  async function init() {
     const iceGatheringComplete = new Promise(resolve => {
       pc.addEventListener('icegatheringstatechange', () => {
         if (pc.iceGatheringState === 'complete') {
@@ -48,7 +46,7 @@ const Player: React.FC<{ encodedOffer: string }> = ({ encodedOffer }) => {
     <div>
       <p>Player time!</p>
       <button onClick={init}>Generate answer</button>
-      {answer && <textarea>{answer}</textarea>}
+      {answer && <textarea readOnly value={answer} />}
     </div>
   );
 };
