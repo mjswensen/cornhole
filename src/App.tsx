@@ -1,7 +1,7 @@
 import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
-import Host from './Host';
-import Player from './Player';
+import Host from './host/Host';
+import Player from './side/Player';
 import './App.css';
 
 const App: React.FC = () => {

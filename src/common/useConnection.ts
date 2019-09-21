@@ -3,22 +3,25 @@ import { useEffect, useRef, MutableRefObject, useState } from 'react';
 function useConnection(
   debug = false,
 ): [RTCPeerConnection, RTCDataChannel, boolean] {
+  // Connection ref
+
   const pcRef: MutableRefObject<RTCPeerConnection> = useRef(
     new RTCPeerConnection({
       iceServers: [{ urls: ['stun:stunserver.org'] }],
     }),
   );
-
   const pc = pcRef.current;
+
+  // Channel ref
 
   const channelRef: MutableRefObject<RTCDataChannel> = useRef(
     pc.createDataChannel('cornhole'),
   );
-
   const channel = channelRef.current;
 
-  const [connected, setConnected] = useState(false);
+  // Connected state
 
+  const [connected, setConnected] = useState(false);
   useEffect(() => {
     const setConnectedTrue = () => {
       setConnected(true);
@@ -28,6 +31,8 @@ function useConnection(
       channel.removeEventListener('open', setConnectedTrue);
     };
   }, [channel]);
+
+  // Debug
 
   useEffect(() => {
     if (debug) {

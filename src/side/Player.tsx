@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import QRLink from './QRLink';
-import useConnection from './useConnection';
+import useConnection from '../common/useConnection';
 
+const ICE_GATHERING_TIMEOUT = 2000;
 async function init(
   pc: RTCPeerConnection,
+  encodedOffer: string,
 ): Promise<RTCSessionDescription | null> {
-  const ICE_GATHERING_TIMEOUT = 2000;
-
   const iceGatheringComplete = new Promise(resolve => {
     pc.addEventListener('icegatheringstatechange', () => {
       if (pc.iceGatheringState === 'complete') {
@@ -21,60 +20,45 @@ async function init(
 
   const signalingStatusComplete = new Promise(resolve => {
     pc.addEventListener('signalingstatechange', () => {
-      if (pc.signalingState === 'have-local-offer') {
+      if (pc.signalingState === 'stable') {
         resolve();
       }
     });
   });
 
-  pc.createOffer().then(offer => {
-    pc.setLocalDescription(offer);
+  pc.setRemoteDescription(JSON.parse(atob(encodedOffer)));
+  pc.createAnswer().then(answer => {
+    pc.setLocalDescription(answer);
   });
 
   await Promise.all([
     Promise.race([iceGatheringComplete, iceGatheringTimeout]),
     signalingStatusComplete,
   ]);
-
   return pc.localDescription;
 }
 
-const Host: React.FC = () => {
-  const [offerUrl, setOfferUrl] = useState<string>();
+const Player: React.FC<{ encodedOffer: string }> = ({ encodedOffer }) => {
+  const [answer, setAnswer] = useState<string>();
 
   const [pc, channel, connected] = useConnection(true);
 
   return (
-    <section>
-      <p>Host</p>
+    <div>
+      <p>Player time!</p>
       <button
         onClick={() =>
-          init(pc).then(description =>
-            setOfferUrl(
-              `${window.location.href}player/${btoa(
-                JSON.stringify(description),
-              )}`,
-            ),
+          init(pc, encodedOffer).then(description =>
+            setAnswer(btoa(JSON.stringify(description))),
           )
         }
       >
-        Start new game!
+        Generate answer
       </button>
-      {offerUrl && (
-        <>
-          <QRLink url={offerUrl} />
-          <p>Paste answer here:</p>
-          <textarea
-            onChange={evt => {
-              const answer = JSON.parse(atob(evt.target.value));
-              pc.setRemoteDescription(answer);
-            }}
-          ></textarea>
-        </>
-      )}
+      {answer && <textarea readOnly value={answer} />}
       <h1>Connected: {connected.toString()}</h1>
-    </section>
+    </div>
   );
 };
 
-export default Host;
+export default Player;
