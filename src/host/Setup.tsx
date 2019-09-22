@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ColorPicker, { Color } from './ColorPicker';
 import OfferLink from './OfferLink';
 
 async function init(
@@ -50,22 +51,101 @@ const Setup: React.FC<{
   connected1: boolean;
   connected2: boolean;
 }> = ({ pc1, pc2, connected1, connected2 }) => {
-  const [initialized, setInitialized] = useState(false);
+  const [initializing, setInitializing] = useState(false);
   const [offerUrl1, setOfferUrl1] = useState<string>();
   const [offerUrl2, setOfferUrl2] = useState<string>();
+  const [teamAColor, setTeamAColor] = useState<Color>(Color.BLUE);
+  const [teamBColor, setTeamBColor] = useState<Color>(Color.GREY);
+  const [player1AName, setPlayer1AName] = useState<string>('');
+  const [player2AName, setPlayer2AName] = useState<string>('');
+  const [player1BName, setPlayer1BName] = useState<string>('');
+  const [player2BName, setPlayer2BName] = useState<string>('');
 
+  const initialized = !!offerUrl1 && !!offerUrl2;
   if (!initialized) {
     return (
-      <section>
-        <p>Host</p>
+      <section className="ui center aligned text container">
+        <h1 className="ui center aligned icon header">
+          <i className="circular target icon"></i>
+          Cornhole
+        </h1>
+        <table className="ui very basic collapsing celled table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Side 1</th>
+              <th>Side 2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <ColorPicker value={teamAColor} onChange={setTeamAColor} />
+              </td>
+              <td>
+                <div className="ui labeled input">
+                  <span className={`ui ${teamAColor} label`}></span>
+                  <input
+                    type="text"
+                    placeholder="Player name..."
+                    value={player1AName}
+                    onChange={evt => setPlayer1AName(evt.target.value)}
+                  />
+                </div>
+              </td>
+              <td>
+                <div className="ui labeled input">
+                  <span className={`ui ${teamAColor} label`}></span>
+                  <input
+                    type="text"
+                    placeholder="Player name..."
+                    value={player2AName}
+                    onChange={evt => setPlayer2AName(evt.target.value)}
+                  />
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <ColorPicker value={teamBColor} onChange={setTeamBColor} />
+              </td>
+              <td>
+                <div className="ui labeled input">
+                  <span className={`ui ${teamBColor} label`}></span>
+                  <input
+                    type="text"
+                    placeholder="Player name..."
+                    value={player1BName}
+                    onChange={evt => setPlayer1BName(evt.target.value)}
+                  />
+                </div>
+              </td>
+              <td>
+                <div className="ui labeled input">
+                  <span className={`ui ${teamBColor} label`}></span>
+                  <input
+                    type="text"
+                    placeholder="Player name..."
+                    value={player2BName}
+                    onChange={evt => setPlayer2BName(evt.target.value)}
+                  />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <button
+          className={`massive primary ui ${
+            initializing ? 'loading' : ''
+          } button`}
+          disabled={initializing}
           onClick={() => {
             init(pc1).then(desc => setOfferUrl1(descriptionUrl(desc)));
             init(pc2).then(desc => setOfferUrl2(descriptionUrl(desc)));
-            setInitialized(true);
+            setInitializing(true);
           }}
         >
-          Start new game!
+          Start game
         </button>
       </section>
     );

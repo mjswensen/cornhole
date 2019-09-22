@@ -2,7 +2,6 @@ import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
 import Host from './host/Host';
 import Side from './side/Side';
-import './App.css';
 
 const App: React.FC = () => {
   return (
