@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import useConnection from '../common/useConnection';
 
-const ICE_GATHERING_TIMEOUT = 2000;
 async function init(
   pc: RTCPeerConnection,
   encodedOffer: string,
 ): Promise<RTCSessionDescription | null> {
+  const ICE_GATHERING_TIMEOUT = 2000;
+
   const iceGatheringComplete = new Promise(resolve => {
     pc.addEventListener('icegatheringstatechange', () => {
       if (pc.iceGatheringState === 'complete') {
@@ -38,11 +38,12 @@ async function init(
   return pc.localDescription;
 }
 
-const Player: React.FC<{ encodedOffer: string }> = ({ encodedOffer }) => {
+const Setup: React.FC<{
+  pc: RTCPeerConnection;
+  encodedOffer: string;
+  connected: boolean;
+}> = ({ pc, encodedOffer, connected }) => {
   const [answer, setAnswer] = useState<string>();
-
-  const [pc, channel, connected] = useConnection(true);
-
   return (
     <div>
       <p>Player time!</p>
@@ -61,4 +62,4 @@ const Player: React.FC<{ encodedOffer: string }> = ({ encodedOffer }) => {
   );
 };
 
-export default Player;
+export default Setup;
