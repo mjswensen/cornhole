@@ -7,7 +7,7 @@ const OfferLink: React.FC<{
   title: string;
 }> = ({ pc, offerUrl, title }) => {
   return (
-    <div>
+    <div className="ui form">
       <h2>{title}</h2>
       <QRLink url={offerUrl} />
       <p>Paste answer here:</p>

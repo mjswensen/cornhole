@@ -45,20 +45,34 @@ const Setup: React.FC<{
 }> = ({ pc, encodedOffer, connected }) => {
   const [answer, setAnswer] = useState<string>();
   return (
-    <div>
-      <p>Player time!</p>
-      <button
-        onClick={() =>
-          init(pc, encodedOffer).then(description =>
-            setAnswer(btoa(JSON.stringify(description))),
-          )
-        }
-      >
-        Generate answer
-      </button>
-      {answer && <textarea readOnly value={answer} />}
-      <h1>Connected: {connected.toString()}</h1>
-    </div>
+    <section className="ui center aligned text container">
+      <h1 className="ui header">Cornhole</h1>
+      {connected ? (
+        <div className="ui success icon message">
+          <i className="check icon"></i>
+          <div className="content">
+            <div className="header">Connected!</div>
+            <p>Waiting for other side to connect...</p>
+          </div>
+        </div>
+      ) : answer ? (
+        <div className="ui form">
+          <p>Paste this code into the game host:</p>
+          <textarea readOnly value={answer} />
+        </div>
+      ) : (
+        <button
+          className="massive primary ui button"
+          onClick={() =>
+            init(pc, encodedOffer).then(description =>
+              setAnswer(btoa(JSON.stringify(description))),
+            )
+          }
+        >
+          Join game
+        </button>
+      )}
+    </section>
   );
 };
 

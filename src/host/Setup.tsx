@@ -151,19 +151,46 @@ const Setup: React.FC<{
     );
   } else {
     return (
-      <section>
+      <section className="ui two column stackable grid">
+        <div className="ui vertical divider"></div>
+        <div className="middle aligned row">
         {offerUrl1 &&
           (connected1 ? (
-            'Side 1 connected!'
+              <div className="column">
+                <div className="ui success icon message">
+                  <i className="check icon"></i>
+                  <div className="content">
+                    <div className="header">Side 1 connected!</div>
+                    <p>
+                      {player1AName} and {player1BName} are ready.
+                    </p>
+                  </div>
+                </div>
+              </div>
           ) : (
+              <div className="center aligned column">
             <OfferLink pc={pc1} offerUrl={offerUrl1} title="Side 1" />
+              </div>
           ))}
         {offerUrl2 &&
           (connected2 ? (
-            'Side 2 connected!'
+              <div className="column">
+                <div className="ui success icon message">
+                  <i className="check icon"></i>
+                  <div className="content">
+                    <div className="header">Side 2 connected!</div>
+                    <p>
+                      {player2AName} and {player2BName} are ready.
+                    </p>
+                  </div>
+                </div>
+              </div>
           ) : (
+              <div className="center aligned column">
             <OfferLink pc={pc2} offerUrl={offerUrl2} title="Side 2" />
+              </div>
           ))}
+        </div>
       </section>
     );
   }
