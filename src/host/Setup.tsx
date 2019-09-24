@@ -154,8 +154,8 @@ const Setup: React.FC<{
       <section className="ui two column stackable grid">
         <div className="ui vertical divider"></div>
         <div className="middle aligned row">
-        {offerUrl1 &&
-          (connected1 ? (
+          {offerUrl1 &&
+            (connected1 ? (
               <div className="column">
                 <div className="ui success icon message">
                   <i className="check icon"></i>
@@ -167,13 +167,13 @@ const Setup: React.FC<{
                   </div>
                 </div>
               </div>
-          ) : (
+            ) : (
               <div className="center aligned column">
-            <OfferLink pc={pc1} offerUrl={offerUrl1} title="Side 1" />
+                <OfferLink pc={pc1} offerUrl={offerUrl1} title="Side 1" />
               </div>
-          ))}
-        {offerUrl2 &&
-          (connected2 ? (
+            ))}
+          {offerUrl2 &&
+            (connected2 ? (
               <div className="column">
                 <div className="ui success icon message">
                   <i className="check icon"></i>
@@ -185,11 +185,11 @@ const Setup: React.FC<{
                   </div>
                 </div>
               </div>
-          ) : (
+            ) : (
               <div className="center aligned column">
-            <OfferLink pc={pc2} offerUrl={offerUrl2} title="Side 2" />
+                <OfferLink pc={pc2} offerUrl={offerUrl2} title="Side 2" />
               </div>
-          ))}
+            ))}
         </div>
       </section>
     );
