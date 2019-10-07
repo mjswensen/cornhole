@@ -1,8 +1,6 @@
 import { useEffect, useRef, MutableRefObject, useState } from 'react';
 
-function useConnection(
-  debug = false,
-): [RTCPeerConnection, RTCDataChannel, boolean] {
+function useConnection(debug: boolean): [RTCPeerConnection, boolean] {
   // Connection ref
 
   const pcRef: MutableRefObject<RTCPeerConnection> = useRef(
@@ -12,25 +10,18 @@ function useConnection(
   );
   const pc = pcRef.current;
 
-  // Channel ref
-
-  const channelRef: MutableRefObject<RTCDataChannel> = useRef(
-    pc.createDataChannel('cornhole'),
-  );
-  const channel = channelRef.current;
-
   // Connected state
 
   const [connected, setConnected] = useState(false);
   useEffect(() => {
-    const setConnectedTrue = () => {
-      setConnected(true);
+    const connectionStateChange = () => {
+      setConnected(pc.connectionState === 'connected');
     };
-    channel.addEventListener('open', setConnectedTrue);
+    pc.addEventListener('connectionstatechange', connectionStateChange);
     return () => {
-      channel.removeEventListener('open', setConnectedTrue);
+      pc.removeEventListener('connectionstatechange', connectionStateChange);
     };
-  }, [channel]);
+  }, [pc]);
 
   // Debug
 
@@ -49,11 +40,6 @@ function useConnection(
       pc.addEventListener('signalingstatechange', log);
       pc.addEventListener('statsended', log);
       pc.addEventListener('track', log);
-      channel.addEventListener('open', log);
-      channel.addEventListener('message', log);
-      channel.addEventListener('close', log);
-      channel.addEventListener('error', log);
-      channel.addEventListener('bufferedamountlow', log);
       return function() {
         pc.removeEventListener('connectionstatechange', log);
         pc.removeEventListener('datachannel', log);
@@ -65,6 +51,38 @@ function useConnection(
         pc.removeEventListener('signalingstatechange', log);
         pc.removeEventListener('statsended', log);
         pc.removeEventListener('track', log);
+      };
+    }
+  }, [debug, pc]);
+
+  return [pcRef.current, connected];
+}
+
+export function useHostConnection(
+  debug = false,
+): [RTCPeerConnection, RTCDataChannel, boolean] {
+  const [pc, connected] = useConnection(debug);
+
+  // Channel ref
+
+  const channelRef: MutableRefObject<RTCDataChannel> = useRef(
+    pc.createDataChannel('cornhole'),
+  );
+  const channel = channelRef.current;
+
+  // Debug
+
+  useEffect(() => {
+    if (debug) {
+      const log = (...args: any[]) => {
+        console.log(...args);
+      };
+      channel.addEventListener('open', log);
+      channel.addEventListener('message', log);
+      channel.addEventListener('close', log);
+      channel.addEventListener('error', log);
+      channel.addEventListener('bufferedamountlow', log);
+      return function() {
         channel.removeEventListener('open', log);
         channel.removeEventListener('message', log);
         channel.removeEventListener('close', log);
@@ -72,9 +90,55 @@ function useConnection(
         channel.removeEventListener('bufferedamountlow', log);
       };
     }
-  }, [debug, pc, channel]);
+  }, [debug, channel]);
 
-  return [pcRef.current, channelRef.current, connected];
+  return [pc, channel, connected];
 }
 
-export default useConnection;
+export function useSideConnection(
+  debug = false,
+): [RTCPeerConnection, RTCDataChannel | null, boolean] {
+  const [pc, connected] = useConnection(debug);
+  const [_, setHasChannel] = useState(false);
+
+  // Channel ref
+
+  const channelRef: MutableRefObject<RTCDataChannel | null> = useRef(null);
+  const channel = channelRef.current;
+
+  useEffect(() => {
+    const setChannel = (evt: RTCDataChannelEvent) => {
+      console.log('received a channel and are setting it', evt.channel);
+      channelRef.current = evt.channel;
+      setHasChannel(true);
+    };
+    pc.addEventListener('datachannel', setChannel);
+    return function() {
+      pc.removeEventListener('datachannel', setChannel);
+    };
+  }, [pc]);
+
+  // Debug
+
+  useEffect(() => {
+    if (debug && channel) {
+      const log = (...args: any[]) => {
+        console.log(...args);
+      };
+      channel.addEventListener('open', log);
+      channel.addEventListener('message', log);
+      channel.addEventListener('close', log);
+      channel.addEventListener('error', log);
+      channel.addEventListener('bufferedamountlow', log);
+      return function() {
+        channel.removeEventListener('open', log);
+        channel.removeEventListener('message', log);
+        channel.removeEventListener('close', log);
+        channel.removeEventListener('error', log);
+        channel.removeEventListener('bufferedamountlow', log);
+      };
+    }
+  }, [debug, channel]);
+
+  return [pc, channelRef.current, connected];
+}
