@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { CombinedState } from '../common/state/combined';
-import { useSideConnection } from '../common/useConnection';
+import { Side as SideState, State } from '../common/state';
+import { useConnection } from '../common/useConnection';
 import Controller from './Controller';
 import Setup from './Setup';
 
-const Side: React.FC<RouteComponentProps<{ offer: string }>> = ({
+const Side: React.FC<
+  RouteComponentProps<{ side: SideState; channelId: string; offer: string }>
+> = ({
   match: {
-    params: { offer: encodedOffer },
+    params: { side, channelId, offer: encodedOffer },
   },
 }) => {
-  const [pc, channel, connected] = useSideConnection();
-  const [state, setState] = useState<CombinedState | null>(null);
+  const [pc, channel, connected] = useConnection(+channelId);
+  const [state, setState] = useState<State | null>(null);
 
   useEffect(() => {
     function handleMessage(evt: MessageEvent) {
@@ -25,8 +27,8 @@ const Side: React.FC<RouteComponentProps<{ offer: string }>> = ({
     }
   }, [channel]);
 
-  if (!!state) {
-    return <Controller state={state} />;
+  if (!!state && !!channel) {
+    return <Controller side={side} state={state} channel={channel} />;
   } else {
     return <Setup pc={pc} encodedOffer={encodedOffer} connected={connected} />;
   }

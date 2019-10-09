@@ -1,20 +1,5 @@
 import React from 'react';
-
-export enum Color {
-  RED = 'red',
-  ORANGE = 'orange',
-  YELLOW = 'yellow',
-  OLIVE = 'olive',
-  GREEN = 'green',
-  TEAL = 'teal',
-  BLUE = 'blue',
-  VIOLET = 'violet',
-  PURPLE = 'purple',
-  PINK = 'pink',
-  BROWN = 'brown',
-  GREY = 'grey',
-  BLACK = 'black',
-}
+import { Color } from '../common/state';
 
 const ColorPicker: React.FC<{
   value: Color;

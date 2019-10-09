@@ -1,23 +1,24 @@
 import React from 'react';
-import { CombinedState } from '../common/state/combined';
+import { Side, State, beginVolley } from '../common/state';
 
 const Controller: React.FC<{
-  state: CombinedState;
-}> = ({ state }) => {
+  side: Side;
+  state: State;
+  channel: RTCDataChannel;
+}> = ({ side, state, channel }) => {
   return (
     <section>
-      <div>Controller</div>
-      <div>My identity is {state.identity}</div>
+      <div>Controller - {side}</div>
+      <pre>My state is {JSON.stringify(state, null, 2)}</pre>
+      <button
+        onClick={() => {
+          channel.send(JSON.stringify(beginVolley(side)));
+        }}
+      >
+        Start recording volley
+      </button>
     </section>
   );
 };
 
 export default Controller;
-
-/*
-
-message that come in:
-
-- turn status, including game over
-
-*/

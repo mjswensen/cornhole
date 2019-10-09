@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import ColorPicker, { Color } from './ColorPicker';
+import {
+  Side,
+  State,
+  Action,
+  setTeamColor,
+  setPlayerName,
+} from '../common/state';
+import ColorPicker from './ColorPicker';
 import OfferLink from './OfferLink';
 
 async function init(
@@ -39,8 +46,12 @@ async function init(
   return pc.localDescription;
 }
 
-function descriptionUrl(description: RTCSessionDescription | null): string {
-  return `${window.location.origin}/#/player/${btoa(
+function descriptionUrl(
+  side: Side,
+  channel: RTCDataChannel,
+  description: RTCSessionDescription | null,
+): string {
+  return `${window.location.origin}/#/player/${side}/${channel.id}/${btoa(
     JSON.stringify(description),
   )}`;
 }
@@ -48,18 +59,25 @@ function descriptionUrl(description: RTCSessionDescription | null): string {
 const Setup: React.FC<{
   pc1: RTCPeerConnection;
   pc2: RTCPeerConnection;
+  channel1: RTCDataChannel;
+  channel2: RTCDataChannel;
   connected1: boolean;
   connected2: boolean;
-}> = ({ pc1, pc2, connected1, connected2 }) => {
+  state: State;
+  dispatch: React.Dispatch<Action>;
+}> = ({
+  pc1,
+  pc2,
+  channel1,
+  channel2,
+  connected1,
+  connected2,
+  state,
+  dispatch,
+}) => {
   const [initializing, setInitializing] = useState(false);
   const [offerUrl1, setOfferUrl1] = useState<string>();
   const [offerUrl2, setOfferUrl2] = useState<string>();
-  const [teamAColor, setTeamAColor] = useState<Color>(Color.BLUE);
-  const [teamBColor, setTeamBColor] = useState<Color>(Color.GREY);
-  const [player1AName, setPlayer1AName] = useState<string>('');
-  const [player2AName, setPlayer2AName] = useState<string>('');
-  const [player1BName, setPlayer1BName] = useState<string>('');
-  const [player2BName, setPlayer2BName] = useState<string>('');
 
   const initialized = !!offerUrl1 && !!offerUrl2;
   if (!initialized) {
@@ -80,54 +98,76 @@ const Setup: React.FC<{
           <tbody>
             <tr>
               <td>
-                <ColorPicker value={teamAColor} onChange={setTeamAColor} />
+                <ColorPicker
+                  value={state.colors.teamA}
+                  onChange={color => dispatch(setTeamColor('teamA', color))}
+                />
               </td>
               <td>
                 <div className="ui labeled input">
-                  <span className={`ui ${teamAColor} label`}></span>
+                  <span className={`ui ${state.colors.teamA} label`}></span>
                   <input
                     type="text"
                     placeholder="Player name..."
-                    value={player1AName}
-                    onChange={evt => setPlayer1AName(evt.target.value)}
+                    value={state.names.side1.teamA}
+                    onChange={evt =>
+                      dispatch(
+                        setPlayerName('side1', 'teamA', evt.target.value),
+                      )
+                    }
                   />
                 </div>
               </td>
               <td>
                 <div className="ui labeled input">
-                  <span className={`ui ${teamAColor} label`}></span>
+                  <span className={`ui ${state.colors.teamA} label`}></span>
                   <input
                     type="text"
                     placeholder="Player name..."
-                    value={player2AName}
-                    onChange={evt => setPlayer2AName(evt.target.value)}
+                    value={state.names.side2.teamA}
+                    onChange={evt =>
+                      dispatch(
+                        setPlayerName('side2', 'teamA', evt.target.value),
+                      )
+                    }
                   />
                 </div>
               </td>
             </tr>
             <tr>
               <td>
-                <ColorPicker value={teamBColor} onChange={setTeamBColor} />
+                <ColorPicker
+                  value={state.colors.teamB}
+                  onChange={color => dispatch(setTeamColor('teamB', color))}
+                />
               </td>
               <td>
                 <div className="ui labeled input">
-                  <span className={`ui ${teamBColor} label`}></span>
+                  <span className={`ui ${state.colors.teamB} label`}></span>
                   <input
                     type="text"
                     placeholder="Player name..."
-                    value={player1BName}
-                    onChange={evt => setPlayer1BName(evt.target.value)}
+                    value={state.names.side1.teamB}
+                    onChange={evt =>
+                      dispatch(
+                        setPlayerName('side1', 'teamB', evt.target.value),
+                      )
+                    }
                   />
                 </div>
               </td>
               <td>
                 <div className="ui labeled input">
-                  <span className={`ui ${teamBColor} label`}></span>
+                  <span className={`ui ${state.colors.teamB} label`}></span>
                   <input
                     type="text"
                     placeholder="Player name..."
-                    value={player2BName}
-                    onChange={evt => setPlayer2BName(evt.target.value)}
+                    value={state.names.side2.teamB}
+                    onChange={evt =>
+                      dispatch(
+                        setPlayerName('side2', 'teamB', evt.target.value),
+                      )
+                    }
                   />
                 </div>
               </td>
@@ -140,8 +180,12 @@ const Setup: React.FC<{
           } button`}
           disabled={initializing}
           onClick={() => {
-            init(pc1).then(desc => setOfferUrl1(descriptionUrl(desc)));
-            init(pc2).then(desc => setOfferUrl2(descriptionUrl(desc)));
+            init(pc1).then(desc =>
+              setOfferUrl1(descriptionUrl('side1', channel1, desc)),
+            );
+            init(pc2).then(desc =>
+              setOfferUrl2(descriptionUrl('side2', channel2, desc)),
+            );
             setInitializing(true);
           }}
         >
@@ -162,7 +206,8 @@ const Setup: React.FC<{
                   <div className="content">
                     <div className="header">Side 1 connected!</div>
                     <p>
-                      {player1AName} and {player1BName} are ready.
+                      {state.names.side1.teamA} and {state.names.side1.teamB}{' '}
+                      are ready.
                     </p>
                   </div>
                 </div>
@@ -180,7 +225,8 @@ const Setup: React.FC<{
                   <div className="content">
                     <div className="header">Side 2 connected!</div>
                     <p>
-                      {player2AName} and {player2BName} are ready.
+                      {state.names.side2.teamA} and {state.names.side2.teamB}{' '}
+                      are ready.
                     </p>
                   </div>
                 </div>
