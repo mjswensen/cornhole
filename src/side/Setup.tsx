@@ -45,24 +45,29 @@ const Setup: React.FC<{
 }> = ({ pc, encodedOffer, connected }) => {
   const [answer, setAnswer] = useState<string>();
   return (
-    <section className="ui center aligned text container">
-      <h1 className="ui header">Cornhole</h1>
+    <section className="container">
+      <div className="jumbotron">
+        <h1 className="display-4">
+          Cornhole
+          <span className="ml-3" role="img" aria-label="corn and hole emoji">
+            🌽🕳
+          </span>
+        </h1>
+      </div>
       {connected ? (
-        <div className="ui success icon message">
-          <i className="check icon"></i>
-          <div className="content">
-            <div className="header">Connected!</div>
-            <p>Waiting for other side to connect...</p>
-          </div>
+        <div className="alert alert-success">
+          <h4 className="alert-heading">Connected!</h4>
+          <hr />
+          <p className="mb-0">Waiting for other side to connect...</p>
         </div>
       ) : answer ? (
-        <div className="ui form">
+        <div>
           <p>Paste this code into the game host:</p>
-          <textarea readOnly value={answer} />
+          <textarea className="form-control" readOnly value={answer} />
         </div>
       ) : (
         <button
-          className="massive primary ui button"
+          className="btn btn-primary btn-lg"
           onClick={() =>
             init(pc, encodedOffer).then(description =>
               setAnswer(btoa(JSON.stringify(description))),

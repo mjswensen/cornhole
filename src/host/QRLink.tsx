@@ -10,7 +10,7 @@ const QRLink: React.FC<{ url: string }> = ({ url }) => {
   }, [url]);
   return dataUrl ? (
     <a href={url} target="_blank" rel="noopener noreferrer">
-      <img src={dataUrl} alt="Join game" />
+      <img className="card-img-top" src={dataUrl} alt="Join game" />
     </a>
   ) : null;
 };

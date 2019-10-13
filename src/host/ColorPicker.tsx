@@ -7,9 +7,9 @@ const ColorPicker: React.FC<{
 }> = ({ value, onChange }) => {
   return (
     <select
+      className="form-control"
       value={value}
       onChange={evt => onChange(evt.target.value as Color)}
-      className="ui dropdown"
     >
       <option value={Color.RED}>Red</option>
       <option value={Color.ORANGE}>Orange</option>

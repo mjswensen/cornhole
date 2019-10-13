@@ -6,10 +6,8 @@ import Side from './side/Side';
 const App: React.FC = () => {
   return (
     <HashRouter>
-      <div className="App">
-        <Route exact path="/" component={Host} />
-        <Route path="/player/:side/:channelId/:offer" component={Side} />
-      </div>
+      <Route exact path="/" component={Host} />
+      <Route path="/player/:side/:channelId/:offer" component={Side} />
     </HashRouter>
   );
 };

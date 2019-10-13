@@ -14,13 +14,11 @@ const Host: React.FC = () => {
 
   useEffect(() => {
     const serialized = JSON.stringify(state);
-    if (connected1) {
+    if (connected) {
       channel1.send(serialized);
-    }
-    if (connected2) {
       channel2.send(serialized);
     }
-  }, [connected1, connected2, channel1, channel2, state]);
+  }, [connected, channel1, channel2, state]);
 
   useEffect(() => {
     function handleMessage(evt: MessageEvent) {

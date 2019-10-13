@@ -82,32 +82,36 @@ const Setup: React.FC<{
   const initialized = !!offerUrl1 && !!offerUrl2;
   if (!initialized) {
     return (
-      <section className="ui center aligned text container">
-        <h1 className="ui center aligned icon header">
-          <i className="circular target icon"></i>
-          Cornhole
-        </h1>
-        <table className="ui very basic collapsing celled table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Side 1</th>
-              <th>Side 2</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <ColorPicker
-                  value={state.colors.teamA}
-                  onChange={color => dispatch(setTeamColor('teamA', color))}
-                />
-              </td>
-              <td>
-                <div className="ui labeled input">
-                  <span className={`ui ${state.colors.teamA} label`}></span>
+      <section className="container">
+        <div className="jumbotron">
+          <h1 className="display-4">
+            Cornhole
+            <span className="ml-3" role="img" aria-label="corn and hole emoji">
+              🌽🕳
+            </span>
+          </h1>
+        </div>
+        <form>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Team Color</th>
+                <th>Side 1</th>
+                <th>Side 2</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <ColorPicker
+                    value={state.colors.teamA}
+                    onChange={color => dispatch(setTeamColor('teamA', color))}
+                  />
+                </td>
+                <td>
                   <input
                     type="text"
+                    className="form-control"
                     placeholder="Player name..."
                     value={state.names.side1.teamA}
                     onChange={evt =>
@@ -116,13 +120,11 @@ const Setup: React.FC<{
                       )
                     }
                   />
-                </div>
-              </td>
-              <td>
-                <div className="ui labeled input">
-                  <span className={`ui ${state.colors.teamA} label`}></span>
+                </td>
+                <td>
                   <input
                     type="text"
+                    className="form-control"
                     placeholder="Player name..."
                     value={state.names.side2.teamA}
                     onChange={evt =>
@@ -131,21 +133,19 @@ const Setup: React.FC<{
                       )
                     }
                   />
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <ColorPicker
-                  value={state.colors.teamB}
-                  onChange={color => dispatch(setTeamColor('teamB', color))}
-                />
-              </td>
-              <td>
-                <div className="ui labeled input">
-                  <span className={`ui ${state.colors.teamB} label`}></span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <ColorPicker
+                    value={state.colors.teamB}
+                    onChange={color => dispatch(setTeamColor('teamB', color))}
+                  />
+                </td>
+                <td>
                   <input
                     type="text"
+                    className="form-control"
                     placeholder="Player name..."
                     value={state.names.side1.teamB}
                     onChange={evt =>
@@ -154,13 +154,11 @@ const Setup: React.FC<{
                       )
                     }
                   />
-                </div>
-              </td>
-              <td>
-                <div className="ui labeled input">
-                  <span className={`ui ${state.colors.teamB} label`}></span>
+                </td>
+                <td>
                   <input
                     type="text"
+                    className="form-control"
                     placeholder="Player name..."
                     value={state.names.side2.teamB}
                     onChange={evt =>
@@ -169,70 +167,63 @@ const Setup: React.FC<{
                       )
                     }
                   />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <button
-          className={`massive primary ui ${
-            initializing ? 'loading' : ''
-          } button`}
-          disabled={initializing}
-          onClick={() => {
-            init(pc1).then(desc =>
-              setOfferUrl1(descriptionUrl('side1', channel1, desc)),
-            );
-            init(pc2).then(desc =>
-              setOfferUrl2(descriptionUrl('side2', channel2, desc)),
-            );
-            setInitializing(true);
-          }}
-        >
-          Start game
-        </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button
+            className="btn btn-primary btn-lg"
+            disabled={initializing}
+            onClick={() => {
+              init(pc1).then(desc =>
+                setOfferUrl1(descriptionUrl('side1', channel1, desc)),
+              );
+              init(pc2).then(desc =>
+                setOfferUrl2(descriptionUrl('side2', channel2, desc)),
+              );
+              setInitializing(true);
+            }}
+          >
+            Start game
+          </button>
+        </form>
       </section>
     );
   } else {
     return (
-      <section className="ui two column stackable grid">
-        <div className="ui vertical divider"></div>
-        <div className="middle aligned row">
+      <section className="h-100 d-flex flex-column justify-content-center">
+        <div className="d-flex justify-content-between">
           {offerUrl1 &&
             (connected1 ? (
-              <div className="column">
-                <div className="ui success icon message">
-                  <i className="check icon"></i>
-                  <div className="content">
-                    <div className="header">Side 1 connected!</div>
-                    <p>
-                      {state.names.side1.teamA} and {state.names.side1.teamB}{' '}
-                      are ready.
-                    </p>
-                  </div>
+              <div className="w-25 p-3">
+                <div className="alert alert-success">
+                  <h4 className="alert-heading">Side 1 connected!</h4>
+                  <hr />
+                  <p className="mb-0">
+                    {state.names.side1.teamA} and {state.names.side1.teamB} are
+                    ready.
+                  </p>
                 </div>
               </div>
             ) : (
-              <div className="center aligned column">
+              <div className="w-25 p-3">
                 <OfferLink pc={pc1} offerUrl={offerUrl1} title="Side 1" />
               </div>
             ))}
           {offerUrl2 &&
             (connected2 ? (
-              <div className="column">
-                <div className="ui success icon message">
-                  <i className="check icon"></i>
-                  <div className="content">
-                    <div className="header">Side 2 connected!</div>
-                    <p>
-                      {state.names.side2.teamA} and {state.names.side2.teamB}{' '}
-                      are ready.
-                    </p>
-                  </div>
+              <div className="w-25 p-3">
+                <div className="alert alert-success">
+                  <h4 className="alert-heading">Side 2 connected!</h4>
+                  <hr />
+                  <p className="mb-0">
+                    {state.names.side2.teamA} and {state.names.side2.teamB} are
+                    ready.
+                  </p>
                 </div>
               </div>
             ) : (
-              <div className="center aligned column">
+              <div className="w-25 p-3">
                 <OfferLink pc={pc2} offerUrl={offerUrl2} title="Side 2" />
               </div>
             ))}
