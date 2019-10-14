@@ -84,7 +84,7 @@ const Setup: React.FC<{
     return (
       <section className="container">
         <div className="jumbotron">
-          <h1 className="display-4">
+          <h1 className="display-2">
             Cornhole
             <span className="ml-3" role="img" aria-label="corn and hole emoji">
               🌽🕳

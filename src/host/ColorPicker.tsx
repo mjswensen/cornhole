@@ -14,11 +14,9 @@ const ColorPicker: React.FC<{
       <option value={Color.RED}>Red</option>
       <option value={Color.ORANGE}>Orange</option>
       <option value={Color.YELLOW}>Yellow</option>
-      <option value={Color.OLIVE}>Olive</option>
       <option value={Color.GREEN}>Green</option>
       <option value={Color.TEAL}>Teal</option>
       <option value={Color.BLUE}>Blue</option>
-      <option value={Color.VIOLET}>Violet</option>
       <option value={Color.PURPLE}>Purple</option>
       <option value={Color.PINK}>Pink</option>
       <option value={Color.BROWN}>Brown</option>

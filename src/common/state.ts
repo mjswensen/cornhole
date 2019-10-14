@@ -7,11 +7,9 @@ export enum Color {
   RED = 'red',
   ORANGE = 'orange',
   YELLOW = 'yellow',
-  OLIVE = 'olive',
   GREEN = 'green',
   TEAL = 'teal',
   BLUE = 'blue',
-  VIOLET = 'violet',
   PURPLE = 'purple',
   PINK = 'pink',
   BROWN = 'brown',
@@ -26,8 +24,8 @@ export type PlayerVolley = {
 
 export type Volley = {
   throwingSide: Side;
-  playerA: PlayerVolley;
-  playerB: PlayerVolley;
+  teamA: PlayerVolley;
+  teamB: PlayerVolley;
 };
 
 export type State = {
@@ -193,11 +191,11 @@ export function reducer(state: State, action: Action): State {
         ...state,
         ephemeralVolley: {
           throwingSide: action.side,
-          playerA: {
+          teamA: {
             onBoard: 0,
             inHole: 0,
           },
-          playerB: {
+          teamB: {
             onBoard: 0,
             inHole: 0,
           },
@@ -229,3 +227,41 @@ export function reducer(state: State, action: Action): State {
 }
 
 // Derived state //
+
+export type Score = {
+  teamA: number;
+  teamB: number;
+};
+
+function toPoints(volley: PlayerVolley): number {
+  return volley.inHole * 3 + volley.onBoard;
+}
+
+export function currentScore(state: State): Score {
+  return state.volleys.reduce(
+    (score, volley) => {
+      const newScoreTeamA =
+        score.teamA +
+        Math.max(0, toPoints(volley.teamA) - toPoints(volley.teamB));
+      const newScoreTeamB =
+        score.teamB +
+        Math.max(0, toPoints(volley.teamB) - toPoints(volley.teamA));
+      return {
+        teamA: newScoreTeamA > 21 ? 11 : newScoreTeamA,
+        teamB: newScoreTeamB > 21 ? 11 : newScoreTeamB,
+      };
+    },
+    { teamA: 0, teamB: 0 },
+  );
+}
+
+export function winner(state: State): Team | null {
+  const score = currentScore(state);
+  if (score.teamA === 21) {
+    return 'teamA';
+  } else if (score.teamB === 21) {
+    return 'teamB';
+  } else {
+    return null;
+  }
+}
