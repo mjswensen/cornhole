@@ -7,6 +7,7 @@ import {
   commitVolley,
   cancelVolley,
 } from '../common/state';
+import ColorIndicator from '../common/ColorIndicator';
 
 const Controller: React.FC<{
   side: Side;
@@ -34,7 +35,10 @@ const Controller: React.FC<{
         <>
           <div className="card">
             <div className="card-body">
-              <h2 className="card-title">{state.names[oppositeSide].teamA}</h2>
+              <h2 className="card-title">
+                {state.names[oppositeSide].teamA}
+                <ColorIndicator color={state.colors.teamA} />
+              </h2>
               <p>
                 On the board:{' '}
                 <button
@@ -134,7 +138,10 @@ const Controller: React.FC<{
           </div>
           <div className="card">
             <div className="card-body">
-              <h2 className="card-title">{state.names[oppositeSide].teamB}</h2>
+              <h2 className="card-title">
+                {state.names[oppositeSide].teamB}
+                <ColorIndicator color={state.colors.teamB} />
+              </h2>
               <p>
                 On the board:{' '}
                 <button

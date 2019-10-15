@@ -5,16 +5,13 @@ export type Team = 'teamA' | 'teamB';
 
 export enum Color {
   RED = 'red',
-  ORANGE = 'orange',
   YELLOW = 'yellow',
   GREEN = 'green',
   TEAL = 'teal',
   BLUE = 'blue',
-  PURPLE = 'purple',
-  PINK = 'pink',
-  BROWN = 'brown',
-  GREY = 'grey',
+  GRAY = 'gray',
   BLACK = 'black',
+  WHITE = 'white',
 }
 
 export type PlayerVolley = {
@@ -157,7 +154,7 @@ export const initialState: State = {
   },
   colors: {
     teamA: Color.BLUE,
-    teamB: Color.GREY,
+    teamB: Color.GRAY,
   },
   volleys: [],
   ephemeralVolley: null,

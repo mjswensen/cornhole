@@ -1,5 +1,6 @@
 import React from 'react';
 import { State, currentScore } from '../common/state';
+import ColorIndicator from '../common/ColorIndicator';
 
 const Scoreboard: React.FC<{
   state: State;
@@ -16,12 +17,12 @@ const Scoreboard: React.FC<{
       </div>
       <div className="d-flex justify-content-between p-2">
         <h2>
-          {state.names.side1.teamA} and {state.names.side2.teamA} (
-          {state.colors.teamA})
+          {state.names.side1.teamA} / {state.names.side2.teamA}
+          <ColorIndicator color={state.colors.teamA} className="ml-3" />
         </h2>
         <h2>
-          {state.names.side1.teamB} and {state.names.side2.teamB} (
-          {state.colors.teamB})
+          <ColorIndicator color={state.colors.teamB} className="mr-3" />
+          {state.names.side1.teamB} and {state.names.side2.teamB}
         </h2>
       </div>
       <div className="d-flex justify-content-between p-2">

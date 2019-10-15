@@ -1,5 +1,6 @@
 import React from 'react';
 import { Color } from '../common/state';
+import styles from './ColorPicker.module.css';
 
 const ColorPicker: React.FC<{
   value: Color;
@@ -7,21 +8,15 @@ const ColorPicker: React.FC<{
 }> = ({ value, onChange }) => {
   return (
     <select
-      className="form-control"
+      className={`form-control ${styles.select}`}
       value={value}
       onChange={evt => onChange(evt.target.value as Color)}
     >
-      <option value={Color.RED}>Red</option>
-      <option value={Color.ORANGE}>Orange</option>
-      <option value={Color.YELLOW}>Yellow</option>
-      <option value={Color.GREEN}>Green</option>
-      <option value={Color.TEAL}>Teal</option>
-      <option value={Color.BLUE}>Blue</option>
-      <option value={Color.PURPLE}>Purple</option>
-      <option value={Color.PINK}>Pink</option>
-      <option value={Color.BROWN}>Brown</option>
-      <option value={Color.GREY}>Grey</option>
-      <option value={Color.BLACK}>Black</option>
+      {Object.entries(Color).map(([key, value]) => (
+        <option key={key} value={value}>
+          {value}
+        </option>
+      ))}
     </select>
   );
 };
