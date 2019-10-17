@@ -7,6 +7,7 @@ import {
   initialState,
   currentScore,
   winner,
+  annotatedEphemeralVolley,
 } from './state';
 
 it('properly calculates the current score and winner', () => {
@@ -72,4 +73,36 @@ it('properly calculates the current score and winner', () => {
     teamB: 4,
   });
   expect(winner(state3)).toBe('teamA');
+});
+
+it('properly calculates the potential score', () => {
+  const actions: Action[] = [
+    beginVolley('side1'),
+    updateVolley({
+      throwingSide: 'side1',
+      teamA: { onBoard: 1, inHole: 1 },
+      teamB: { onBoard: 2, inHole: 0 },
+    }),
+    commitVolley(),
+    beginVolley('side2'),
+    updateVolley({
+      throwingSide: 'side2',
+      teamA: { onBoard: 2, inHole: 0 },
+      teamB: { onBoard: 1, inHole: 1 },
+    }),
+  ];
+  const state = actions.reduce(reducer, initialState);
+  const score = currentScore(state);
+  expect(score).toEqual({
+    teamA: 2,
+    teamB: 0,
+  });
+  const ephemeralVolley = annotatedEphemeralVolley(state);
+  expect(ephemeralVolley).not.toBeNull();
+  if (ephemeralVolley) {
+    expect(ephemeralVolley.score).toEqual({
+      teamA: 2,
+      teamB: 2,
+    });
+  }
 });

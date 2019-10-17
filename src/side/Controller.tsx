@@ -6,8 +6,10 @@ import {
   updateVolley,
   commitVolley,
   cancelVolley,
+  Team,
 } from '../common/state';
 import ColorIndicator from '../common/ColorIndicator';
+import Stepper from './Stepper';
 
 const Controller: React.FC<{
   side: Side;
@@ -15,6 +17,25 @@ const Controller: React.FC<{
   channel: RTCDataChannel;
 }> = ({ side, state, channel }) => {
   const oppositeSide = side === 'side1' ? 'side2' : 'side1';
+  function sendUpdatedVolley(
+    team: Team,
+    countKey: 'onBoard' | 'inHole',
+    value: number,
+  ) {
+    if (state.ephemeralVolley) {
+      channel.send(
+        JSON.stringify(
+          updateVolley({
+            ...state.ephemeralVolley,
+            [team]: {
+              ...state.ephemeralVolley[team],
+              [countKey]: Math.min(Math.max(value, 0), 4),
+            },
+          }),
+        ),
+      );
+    }
+  }
   return (
     <section className="container">
       <div className="jumbotron">
@@ -33,232 +54,80 @@ const Controller: React.FC<{
         <p>Your side is currently throwing.</p>
       ) : (
         <>
-          <div className="card">
-            <div className="card-body">
-              <h2 className="card-title">
-                {state.names[oppositeSide].teamA}
-                <ColorIndicator color={state.colors.teamA} />
-              </h2>
-              <p>
-                On the board:{' '}
-                <button
-                  className="btn btn-light"
-                  onClick={() =>
-                    state.ephemeralVolley
-                      ? channel.send(
-                          JSON.stringify(
-                            updateVolley({
-                              ...state.ephemeralVolley,
-                              teamA: {
-                                ...state.ephemeralVolley.teamA,
-                                onBoard: Math.max(
-                                  state.ephemeralVolley.teamA.onBoard - 1,
-                                  0,
-                                ),
-                              },
-                            }),
-                          ),
-                        )
-                      : null
-                  }
-                >
-                  -
-                </button>{' '}
-                {state.ephemeralVolley.teamA.onBoard}{' '}
-                <button
-                  className="btn btn-light"
-                  onClick={() =>
-                    state.ephemeralVolley
-                      ? channel.send(
-                          JSON.stringify(
-                            updateVolley({
-                              ...state.ephemeralVolley,
-                              teamA: {
-                                ...state.ephemeralVolley.teamA,
-                                onBoard:
-                                  state.ephemeralVolley.teamA.onBoard + 1,
-                              },
-                            }),
-                          ),
-                        )
-                      : null
-                  }
-                >
-                  +
-                </button>
-              </p>
-              <p>
-                In the hole:{' '}
-                <button
-                  className="btn btn-light"
-                  onClick={() =>
-                    state.ephemeralVolley
-                      ? channel.send(
-                          JSON.stringify(
-                            updateVolley({
-                              ...state.ephemeralVolley,
-                              teamA: {
-                                ...state.ephemeralVolley.teamA,
-                                inHole: Math.max(
-                                  state.ephemeralVolley.teamA.inHole - 1,
-                                  0,
-                                ),
-                              },
-                            }),
-                          ),
-                        )
-                      : null
-                  }
-                >
-                  -
-                </button>{' '}
-                {state.ephemeralVolley.teamA.inHole}{' '}
-                <button
-                  className="btn btn-light"
-                  onClick={() =>
-                    state.ephemeralVolley
-                      ? channel.send(
-                          JSON.stringify(
-                            updateVolley({
-                              ...state.ephemeralVolley,
-                              teamA: {
-                                ...state.ephemeralVolley.teamA,
-                                inHole: state.ephemeralVolley.teamA.inHole + 1,
-                              },
-                            }),
-                          ),
-                        )
-                      : null
-                  }
-                >
-                  +
-                </button>
-              </p>
+          <div className="row">
+            <div className="col-12 col-md-6">
+              <div className="card">
+                <div className="card-body">
+                  <h2 className="card-title">
+                    {state.names[oppositeSide].teamA}
+                    <ColorIndicator color={state.colors.teamA} />
+                  </h2>
+                  <p>
+                    On the board:
+                    <Stepper
+                      value={state.ephemeralVolley.teamA.onBoard}
+                      onChange={v => sendUpdatedVolley('teamA', 'onBoard', v)}
+                    />
+                  </p>
+                  <p>
+                    In the hole:
+                    <Stepper
+                      value={state.ephemeralVolley.teamA.inHole}
+                      onChange={v => sendUpdatedVolley('teamA', 'inHole', v)}
+                    />
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="col-12 col-md-6">
+              <div className="card">
+                <div className="card-body">
+                  <h2 className="card-title">
+                    {state.names[oppositeSide].teamB}
+                    <ColorIndicator color={state.colors.teamB} />
+                  </h2>
+                  <p>
+                    On the board:
+                    <Stepper
+                      value={state.ephemeralVolley.teamB.onBoard}
+                      onChange={v => sendUpdatedVolley('teamB', 'onBoard', v)}
+                    />
+                  </p>
+                  <p>
+                    In the hole:
+                    <Stepper
+                      value={state.ephemeralVolley.teamB.inHole}
+                      onChange={v => sendUpdatedVolley('teamB', 'inHole', v)}
+                    />
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="card">
-            <div className="card-body">
-              <h2 className="card-title">
-                {state.names[oppositeSide].teamB}
-                <ColorIndicator color={state.colors.teamB} />
-              </h2>
-              <p>
-                On the board:{' '}
-                <button
-                  className="btn btn-light"
-                  onClick={() =>
-                    state.ephemeralVolley
-                      ? channel.send(
-                          JSON.stringify(
-                            updateVolley({
-                              ...state.ephemeralVolley,
-                              teamB: {
-                                ...state.ephemeralVolley.teamB,
-                                onBoard: Math.max(
-                                  state.ephemeralVolley.teamB.onBoard - 1,
-                                  0,
-                                ),
-                              },
-                            }),
-                          ),
-                        )
-                      : null
+          <div className="row mt-4">
+            <div className="col">
+              <button
+                className="btn btn-secondary btn-lg"
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      'Are you sure you want to cancel recording this volley?',
+                    )
+                  ) {
+                    channel.send(JSON.stringify(cancelVolley()));
                   }
-                >
-                  -
-                </button>{' '}
-                {state.ephemeralVolley.teamB.onBoard}{' '}
-                <button
-                  className="btn btn-light"
-                  onClick={() =>
-                    state.ephemeralVolley
-                      ? channel.send(
-                          JSON.stringify(
-                            updateVolley({
-                              ...state.ephemeralVolley,
-                              teamB: {
-                                ...state.ephemeralVolley.teamB,
-                                onBoard:
-                                  state.ephemeralVolley.teamB.onBoard + 1,
-                              },
-                            }),
-                          ),
-                        )
-                      : null
-                  }
-                >
-                  +
-                </button>
-              </p>
-              <p>
-                In the hole:{' '}
-                <button
-                  className="btn btn-light"
-                  onClick={() =>
-                    state.ephemeralVolley
-                      ? channel.send(
-                          JSON.stringify(
-                            updateVolley({
-                              ...state.ephemeralVolley,
-                              teamB: {
-                                ...state.ephemeralVolley.teamB,
-                                inHole: Math.max(
-                                  state.ephemeralVolley.teamB.inHole - 1,
-                                  0,
-                                ),
-                              },
-                            }),
-                          ),
-                        )
-                      : null
-                  }
-                >
-                  -
-                </button>{' '}
-                {state.ephemeralVolley.teamB.inHole}{' '}
-                <button
-                  className="btn btn-light"
-                  onClick={() =>
-                    state.ephemeralVolley
-                      ? channel.send(
-                          JSON.stringify(
-                            updateVolley({
-                              ...state.ephemeralVolley,
-                              teamB: {
-                                ...state.ephemeralVolley.teamB,
-                                inHole: state.ephemeralVolley.teamB.inHole + 1,
-                              },
-                            }),
-                          ),
-                        )
-                      : null
-                  }
-                >
-                  +
-                </button>
-              </p>
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-success btn-lg"
+                onClick={() => channel.send(JSON.stringify(commitVolley()))}
+              >
+                Complete Volley
+              </button>
             </div>
           </div>
-          <button
-            className="btn btn-secondary btn-lg"
-            onClick={() => {
-              if (
-                window.confirm(
-                  'Are you sure you want to cancel recording this volley?',
-                )
-              ) {
-                channel.send(JSON.stringify(cancelVolley()));
-              }
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            className="btn btn-success btn-lg"
-            onClick={() => channel.send(JSON.stringify(commitVolley()))}
-          >
-            Complete Volley
-          </button>
         </>
       )}
     </section>

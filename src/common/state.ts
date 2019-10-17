@@ -234,22 +234,18 @@ function toPoints(volley: PlayerVolley): number {
   return volley.inHole * 3 + volley.onBoard;
 }
 
+function last<T>(arr: T[]): T {
+  return arr[arr.length - 1];
+}
+
+function latestScore(annotatedVolleys: AnnotatedVolley[]): Score {
+  return last(annotatedVolleys)
+    ? last(annotatedVolleys).score
+    : { teamA: 0, teamB: 0 };
+}
+
 export function currentScore(state: State): Score {
-  return state.volleys.reduce(
-    (score, volley) => {
-      const newScoreTeamA =
-        score.teamA +
-        Math.max(0, toPoints(volley.teamA) - toPoints(volley.teamB));
-      const newScoreTeamB =
-        score.teamB +
-        Math.max(0, toPoints(volley.teamB) - toPoints(volley.teamA));
-      return {
-        teamA: newScoreTeamA > 21 ? 11 : newScoreTeamA,
-        teamB: newScoreTeamB > 21 ? 11 : newScoreTeamB,
-      };
-    },
-    { teamA: 0, teamB: 0 },
-  );
+  return latestScore(annotatedVolleys(state.volleys));
 }
 
 export function winner(state: State): Team | null {
@@ -258,6 +254,43 @@ export function winner(state: State): Team | null {
     return 'teamA';
   } else if (score.teamB === 21) {
     return 'teamB';
+  } else {
+    return null;
+  }
+}
+
+export type AnnotatedVolley = Volley & {
+  diffA: number;
+  diffB: number;
+  bust: Team | null;
+  score: Score;
+};
+
+export function annotatedVolleys(volleys: Volley[]): AnnotatedVolley[] {
+  return volleys.reduce<AnnotatedVolley[]>((annotatedVolleys, volley) => {
+    const score = latestScore(annotatedVolleys);
+    const diffA = Math.max(0, toPoints(volley.teamA) - toPoints(volley.teamB));
+    const diffB = Math.max(0, toPoints(volley.teamB) - toPoints(volley.teamA));
+    const newScoreA = score.teamA + diffA;
+    const newScoreB = score.teamB + diffB;
+    const bust = newScoreA > 21 ? 'teamA' : newScoreB > 21 ? 'teamB' : null;
+    const newScore = {
+      teamA: newScoreA > 21 ? 11 : newScoreA,
+      teamB: newScoreB > 21 ? 11 : newScoreB,
+    };
+    return annotatedVolleys.concat({
+      ...volley,
+      diffA,
+      diffB,
+      bust,
+      score: newScore,
+    });
+  }, []);
+}
+
+export function annotatedEphemeralVolley(state: State): AnnotatedVolley | null {
+  if (state.ephemeralVolley) {
+    return last(annotatedVolleys([...state.volleys, state.ephemeralVolley]));
   } else {
     return null;
   }
