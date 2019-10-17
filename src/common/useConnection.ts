@@ -1,4 +1,5 @@
-import { useEffect, useRef, MutableRefObject, useState } from 'react';
+import { useEffect, useState } from 'react';
+import useInstanceRef from './useInstanceRef';
 
 export function useConnection(
   channelId: number,
@@ -6,30 +7,21 @@ export function useConnection(
 ): [RTCPeerConnection, RTCDataChannel, boolean] {
   // Connection ref
 
-  const pcRef: MutableRefObject<RTCPeerConnection | null> = useRef(null);
-  function getPc(): RTCPeerConnection {
-    if (pcRef.current === null) {
-      pcRef.current = new RTCPeerConnection({
+  const pc = useInstanceRef(
+    () =>
+      new RTCPeerConnection({
         iceServers: [{ urls: ['stun:stunserver.org'] }],
-      });
-    }
-    return pcRef.current;
-  }
-  const pc = getPc();
+      }),
+  );
 
   // Channel ref
 
-  const channelRef: MutableRefObject<RTCDataChannel | null> = useRef(null);
-  function getChannel(): RTCDataChannel {
-    if (channelRef.current === null) {
-      channelRef.current = pc.createDataChannel('cornhole', {
-        negotiated: true,
-        id: channelId,
-      });
-    }
-    return channelRef.current;
-  }
-  const channel = getChannel();
+  const channel = useInstanceRef(() =>
+    pc.createDataChannel('cornhole', {
+      negotiated: true,
+      id: channelId,
+    }),
+  );
 
   // Connected state
 
