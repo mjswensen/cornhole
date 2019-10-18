@@ -1,31 +1,31 @@
 import {
   reducer,
   Action,
-  beginVolley,
-  updateVolley,
-  commitVolley,
+  beginFrame,
+  updateFrame,
+  commitFrame,
   initialState,
   currentScore,
   winner,
-  annotatedEphemeralVolley,
+  annotatedEphemeralFrame,
 } from './state';
 
 it('properly calculates the current score and winner', () => {
   const actions1: Action[] = [
-    beginVolley('side1'),
-    updateVolley({
+    beginFrame('side1'),
+    updateFrame({
       throwingSide: 'side1',
       teamA: { onBoard: 2, inHole: 1 },
       teamB: { onBoard: 3, inHole: 0 },
     }),
-    commitVolley(),
-    beginVolley('side2'),
-    updateVolley({
+    commitFrame(),
+    beginFrame('side2'),
+    updateFrame({
       throwingSide: 'side2',
       teamA: { onBoard: 4, inHole: 0 },
       teamB: { onBoard: 2, inHole: 2 },
     }),
-    commitVolley(),
+    commitFrame(),
   ];
   const state1 = actions1.reduce(reducer, initialState);
   const score1 = currentScore(state1);
@@ -35,20 +35,20 @@ it('properly calculates the current score and winner', () => {
   });
 
   const actions2: Action[] = [
-    beginVolley('side1'),
-    updateVolley({
+    beginFrame('side1'),
+    updateFrame({
       throwingSide: 'side1',
       teamA: { onBoard: 0, inHole: 4 },
       teamB: { onBoard: 0, inHole: 0 },
     }),
-    commitVolley(),
-    beginVolley('side2'),
-    updateVolley({
+    commitFrame(),
+    beginFrame('side2'),
+    updateFrame({
       throwingSide: 'side2',
       teamA: { onBoard: 0, inHole: 4 },
       teamB: { onBoard: 0, inHole: 0 },
     }),
-    commitVolley(),
+    commitFrame(),
   ];
   const state2 = actions2.reduce(reducer, state1);
   const score2 = currentScore(state2);
@@ -58,13 +58,13 @@ it('properly calculates the current score and winner', () => {
   });
 
   const actions3: Action[] = [
-    beginVolley('side1'),
-    updateVolley({
+    beginFrame('side1'),
+    updateFrame({
       throwingSide: 'side1',
       teamA: { onBoard: 1, inHole: 3 },
       teamB: { onBoard: 0, inHole: 0 },
     }),
-    commitVolley(),
+    commitFrame(),
   ];
   const state3 = actions3.reduce(reducer, state2);
   const score3 = currentScore(state3);
@@ -77,15 +77,15 @@ it('properly calculates the current score and winner', () => {
 
 it('properly calculates the potential score', () => {
   const actions: Action[] = [
-    beginVolley('side1'),
-    updateVolley({
+    beginFrame('side1'),
+    updateFrame({
       throwingSide: 'side1',
       teamA: { onBoard: 1, inHole: 1 },
       teamB: { onBoard: 2, inHole: 0 },
     }),
-    commitVolley(),
-    beginVolley('side2'),
-    updateVolley({
+    commitFrame(),
+    beginFrame('side2'),
+    updateFrame({
       throwingSide: 'side2',
       teamA: { onBoard: 2, inHole: 0 },
       teamB: { onBoard: 1, inHole: 1 },
@@ -97,10 +97,10 @@ it('properly calculates the potential score', () => {
     teamA: 2,
     teamB: 0,
   });
-  const ephemeralVolley = annotatedEphemeralVolley(state);
-  expect(ephemeralVolley).not.toBeNull();
-  if (ephemeralVolley) {
-    expect(ephemeralVolley.score).toEqual({
+  const ephemeralFrame = annotatedEphemeralFrame(state);
+  expect(ephemeralFrame).not.toBeNull();
+  if (ephemeralFrame) {
+    expect(ephemeralFrame.score).toEqual({
       teamA: 2,
       teamB: 2,
     });

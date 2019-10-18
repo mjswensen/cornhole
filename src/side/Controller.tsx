@@ -2,10 +2,10 @@ import React from 'react';
 import {
   Side,
   State,
-  beginVolley,
-  updateVolley,
-  commitVolley,
-  cancelVolley,
+  beginFrame,
+  updateFrame,
+  commitFrame,
+  cancelFrame,
   Team,
 } from '../common/state';
 import ColorIndicator from '../common/ColorIndicator';
@@ -17,18 +17,18 @@ const Controller: React.FC<{
   channel: RTCDataChannel;
 }> = ({ side, state, channel }) => {
   const oppositeSide = side === 'side1' ? 'side2' : 'side1';
-  function sendUpdatedVolley(
+  function sendUpdatedFrame(
     team: Team,
     countKey: 'onBoard' | 'inHole',
     value: number,
   ) {
-    if (state.ephemeralVolley) {
+    if (state.ephemeralFrame) {
       channel.send(
         JSON.stringify(
-          updateVolley({
-            ...state.ephemeralVolley,
+          updateFrame({
+            ...state.ephemeralFrame,
             [team]: {
-              ...state.ephemeralVolley[team],
+              ...state.ephemeralFrame[team],
               [countKey]: Math.min(Math.max(value, 0), 4),
             },
           }),
@@ -41,16 +41,16 @@ const Controller: React.FC<{
       <div className="jumbotron">
         <h1 className="display-4">Side {side === 'side1' ? '1' : '2'}</h1>
       </div>
-      {state.ephemeralVolley === null ? (
+      {state.ephemeralFrame === null ? (
         <button
           className="btn btn-primary btn-lg"
           onClick={() => {
-            channel.send(JSON.stringify(beginVolley(oppositeSide)));
+            channel.send(JSON.stringify(beginFrame(oppositeSide)));
           }}
         >
-          Start recording volley
+          Start recording frame
         </button>
-      ) : state.ephemeralVolley.throwingSide === side ? (
+      ) : state.ephemeralFrame.throwingSide === side ? (
         <p>Your side is currently throwing.</p>
       ) : (
         <>
@@ -65,15 +65,15 @@ const Controller: React.FC<{
                   <p>
                     On the board:
                     <Stepper
-                      value={state.ephemeralVolley.teamA.onBoard}
-                      onChange={v => sendUpdatedVolley('teamA', 'onBoard', v)}
+                      value={state.ephemeralFrame.teamA.onBoard}
+                      onChange={v => sendUpdatedFrame('teamA', 'onBoard', v)}
                     />
                   </p>
                   <p>
                     In the hole:
                     <Stepper
-                      value={state.ephemeralVolley.teamA.inHole}
-                      onChange={v => sendUpdatedVolley('teamA', 'inHole', v)}
+                      value={state.ephemeralFrame.teamA.inHole}
+                      onChange={v => sendUpdatedFrame('teamA', 'inHole', v)}
                     />
                   </p>
                 </div>
@@ -89,15 +89,15 @@ const Controller: React.FC<{
                   <p>
                     On the board:
                     <Stepper
-                      value={state.ephemeralVolley.teamB.onBoard}
-                      onChange={v => sendUpdatedVolley('teamB', 'onBoard', v)}
+                      value={state.ephemeralFrame.teamB.onBoard}
+                      onChange={v => sendUpdatedFrame('teamB', 'onBoard', v)}
                     />
                   </p>
                   <p>
                     In the hole:
                     <Stepper
-                      value={state.ephemeralVolley.teamB.inHole}
-                      onChange={v => sendUpdatedVolley('teamB', 'inHole', v)}
+                      value={state.ephemeralFrame.teamB.inHole}
+                      onChange={v => sendUpdatedFrame('teamB', 'inHole', v)}
                     />
                   </p>
                 </div>
@@ -111,10 +111,10 @@ const Controller: React.FC<{
                 onClick={() => {
                   if (
                     window.confirm(
-                      'Are you sure you want to cancel recording this volley?',
+                      'Are you sure you want to cancel recording this frame?',
                     )
                   ) {
-                    channel.send(JSON.stringify(cancelVolley()));
+                    channel.send(JSON.stringify(cancelFrame()));
                   }
                 }}
               >
@@ -122,9 +122,9 @@ const Controller: React.FC<{
               </button>
               <button
                 className="btn btn-success btn-lg"
-                onClick={() => channel.send(JSON.stringify(commitVolley()))}
+                onClick={() => channel.send(JSON.stringify(commitFrame()))}
               >
-                Complete Volley
+                Complete Frame
               </button>
             </div>
           </div>

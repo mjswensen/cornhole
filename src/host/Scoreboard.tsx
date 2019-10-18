@@ -2,8 +2,8 @@ import React from 'react';
 import {
   State,
   currentScore,
-  annotatedEphemeralVolley,
-  annotatedVolleys,
+  annotatedEphemeralFrame,
+  annotatedFrames,
 } from '../common/state';
 import ColorIndicator from '../common/ColorIndicator';
 
@@ -11,8 +11,8 @@ const Scoreboard: React.FC<{
   state: State;
 }> = ({ state }) => {
   const score = currentScore(state);
-  const inProgressVolley = annotatedEphemeralVolley(state);
-  const previousVolleys = annotatedVolleys(state.volleys)
+  const inProgressFrame = annotatedEphemeralFrame(state);
+  const previousFrames = annotatedFrames(state.frames)
     .slice()
     .reverse();
   function diff(diff: number, bust: boolean): React.ReactNode | null {
@@ -57,57 +57,57 @@ const Scoreboard: React.FC<{
             <td className="display-4">{score.teamA}</td>
             <td className="display-4">{score.teamB}</td>
           </tr>
-          {inProgressVolley !== null ? (
+          {inProgressFrame !== null ? (
             <tr className="table-secondary">
               <td>Potential Score</td>
               <td>
                 <div>
-                  {inProgressVolley.score.teamA}
+                  {inProgressFrame.score.teamA}
                   {diff(
-                    inProgressVolley.diffA,
-                    inProgressVolley.bust === 'teamA',
+                    inProgressFrame.diffA,
+                    inProgressFrame.bust === 'teamA',
                   )}
                 </div>
                 <span className="text-muted font-italic">
-                  {state.names[inProgressVolley.throwingSide].teamA} has{' '}
-                  {inProgressVolley.teamA.onBoard} on the board and{' '}
-                  {inProgressVolley.teamA.inHole} in the hole
+                  {state.names[inProgressFrame.throwingSide].teamA} has{' '}
+                  {inProgressFrame.teamA.onBoard} on the board and{' '}
+                  {inProgressFrame.teamA.inHole} in the hole
                 </span>
               </td>
               <td>
                 <div>
-                  {inProgressVolley.score.teamB}
+                  {inProgressFrame.score.teamB}
                   {diff(
-                    inProgressVolley.diffB,
-                    inProgressVolley.bust === 'teamB',
+                    inProgressFrame.diffB,
+                    inProgressFrame.bust === 'teamB',
                   )}
                 </div>
                 <span className="text-muted font-italic">
-                  {state.names[inProgressVolley.throwingSide].teamB} has{' '}
-                  {inProgressVolley.teamB.onBoard} on the board and{' '}
-                  {inProgressVolley.teamB.inHole} in the hole
+                  {state.names[inProgressFrame.throwingSide].teamB} has{' '}
+                  {inProgressFrame.teamB.onBoard} on the board and{' '}
+                  {inProgressFrame.teamB.inHole} in the hole
                 </span>
               </td>
             </tr>
           ) : null}
-          {previousVolleys.map((volley, i) => (
+          {previousFrames.map((frame, i) => (
             <tr key={i}>
               <td></td>
               <td>
                 <div>
-                  {state.names[volley.throwingSide].teamA} got{' '}
-                  {volley.teamA.onBoard} on the board and {volley.teamA.inHole}{' '}
-                  in the hole
+                  {state.names[frame.throwingSide].teamA} got{' '}
+                  {frame.teamA.onBoard} on the board and {frame.teamA.inHole} in
+                  the hole
                 </div>
-                {diff(volley.diffA, volley.bust === 'teamA')}
+                {diff(frame.diffA, frame.bust === 'teamA')}
               </td>
               <td>
                 <div>
-                  {state.names[volley.throwingSide].teamB} got{' '}
-                  {volley.teamB.onBoard} on the board and {volley.teamB.inHole}{' '}
-                  in the hole
+                  {state.names[frame.throwingSide].teamB} got{' '}
+                  {frame.teamB.onBoard} on the board and {frame.teamB.inHole} in
+                  the hole
                 </div>
-                {diff(volley.diffB, volley.bust === 'teamB')}
+                {diff(frame.diffB, frame.bust === 'teamB')}
               </td>
             </tr>
           ))}

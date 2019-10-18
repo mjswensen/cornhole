@@ -14,15 +14,15 @@ export enum Color {
   WHITE = 'white',
 }
 
-export type PlayerVolley = {
+export type PlayerFrame = {
   onBoard: number;
   inHole: number;
 };
 
-export type Volley = {
+export type Frame = {
   throwingSide: Side;
-  teamA: PlayerVolley;
-  teamB: PlayerVolley;
+  teamA: PlayerFrame;
+  teamB: PlayerFrame;
 };
 
 export type State = {
@@ -40,18 +40,18 @@ export type State = {
     teamA: Color;
     teamB: Color;
   };
-  volleys: Volley[];
-  ephemeralVolley: Volley | null;
+  frames: Frame[];
+  ephemeralFrame: Frame | null;
 };
 
 // Action types //
 
 export const SET_PLAYER_NAME = 'SET_PLAYER_NAME';
 export const SET_TEAM_COLOR = 'SET_TEAM_COLOR';
-export const BEGIN_VOLLEY = 'BEGIN_VOLLEY';
-export const UPDATE_VOLLEY = 'UPDATE_VOLLEY';
-export const COMMIT_VOLLEY = 'COMMIT_VOLLEY';
-export const CANCEL_VOLLEY = 'CANCEL_VOLLEY';
+export const BEGIN_FRAME = 'BEGIN_FRAME';
+export const UPDATE_FRAME = 'UPDATE_FRAME';
+export const COMMIT_FRAME = 'COMMIT_FRAME';
+export const CANCEL_FRAME = 'CANCEL_FRAME';
 
 // Actions //
 
@@ -68,31 +68,31 @@ interface SetTeamColorAction {
   color: Color;
 }
 
-interface BeginVolleyAction {
-  type: typeof BEGIN_VOLLEY;
+interface BeginFrameAction {
+  type: typeof BEGIN_FRAME;
   side: Side;
 }
 
-interface UpdateVolleyAction {
-  type: typeof UPDATE_VOLLEY;
-  volley: Volley;
+interface UpdateFrameAction {
+  type: typeof UPDATE_FRAME;
+  frame: Frame;
 }
 
-interface CommitVolleyAction {
-  type: typeof COMMIT_VOLLEY;
+interface CommitFrameAction {
+  type: typeof COMMIT_FRAME;
 }
 
-interface CancelVolleyAction {
-  type: typeof CANCEL_VOLLEY;
+interface CancelFrameAction {
+  type: typeof CANCEL_FRAME;
 }
 
 export type Action =
   | SetPlayerNameAction
   | SetTeamColorAction
-  | BeginVolleyAction
-  | UpdateVolleyAction
-  | CommitVolleyAction
-  | CancelVolleyAction;
+  | BeginFrameAction
+  | UpdateFrameAction
+  | CommitFrameAction
+  | CancelFrameAction;
 
 // Action creators //
 
@@ -113,29 +113,29 @@ export function setTeamColor(team: Team, color: Color): Action {
   };
 }
 
-export function beginVolley(side: Side): Action {
+export function beginFrame(side: Side): Action {
   return {
-    type: BEGIN_VOLLEY,
+    type: BEGIN_FRAME,
     side,
   };
 }
 
-export function updateVolley(volley: Volley): Action {
+export function updateFrame(frame: Frame): Action {
   return {
-    type: UPDATE_VOLLEY,
-    volley,
+    type: UPDATE_FRAME,
+    frame,
   };
 }
 
-export function commitVolley(): Action {
+export function commitFrame(): Action {
   return {
-    type: COMMIT_VOLLEY,
+    type: COMMIT_FRAME,
   };
 }
 
-export function cancelVolley(): Action {
+export function cancelFrame(): Action {
   return {
-    type: CANCEL_VOLLEY,
+    type: CANCEL_FRAME,
   };
 }
 
@@ -156,8 +156,8 @@ export const initialState: State = {
     teamA: Color.BLUE,
     teamB: Color.GRAY,
   },
-  volleys: [],
-  ephemeralVolley: null,
+  frames: [],
+  ephemeralFrame: null,
 };
 
 // Reducer //
@@ -183,10 +183,10 @@ export function reducer(state: State, action: Action): State {
           [action.team]: action.color,
         },
       };
-    case BEGIN_VOLLEY:
+    case BEGIN_FRAME:
       return {
         ...state,
-        ephemeralVolley: {
+        ephemeralFrame: {
           throwingSide: action.side,
           teamA: {
             onBoard: 0,
@@ -198,25 +198,25 @@ export function reducer(state: State, action: Action): State {
           },
         },
       };
-    case UPDATE_VOLLEY:
+    case UPDATE_FRAME:
       return {
         ...state,
-        ephemeralVolley: action.volley,
+        ephemeralFrame: action.frame,
       };
-    case COMMIT_VOLLEY:
-      if (state.ephemeralVolley !== null) {
+    case COMMIT_FRAME:
+      if (state.ephemeralFrame !== null) {
         return {
           ...state,
-          volleys: state.volleys.concat(state.ephemeralVolley),
-          ephemeralVolley: null,
+          frames: state.frames.concat(state.ephemeralFrame),
+          ephemeralFrame: null,
         };
       } else {
         return state;
       }
-    case CANCEL_VOLLEY:
+    case CANCEL_FRAME:
       return {
         ...state,
-        ephemeralVolley: null,
+        ephemeralFrame: null,
       };
     default:
       return state;
@@ -230,22 +230,22 @@ export type Score = {
   teamB: number;
 };
 
-function toPoints(volley: PlayerVolley): number {
-  return volley.inHole * 3 + volley.onBoard;
+function toPoints(frame: PlayerFrame): number {
+  return frame.inHole * 3 + frame.onBoard;
 }
 
 function last<T>(arr: T[]): T {
   return arr[arr.length - 1];
 }
 
-function latestScore(annotatedVolleys: AnnotatedVolley[]): Score {
-  return last(annotatedVolleys)
-    ? last(annotatedVolleys).score
+function latestScore(annotatedFrames: AnnotatedFrame[]): Score {
+  return last(annotatedFrames)
+    ? last(annotatedFrames).score
     : { teamA: 0, teamB: 0 };
 }
 
 export function currentScore(state: State): Score {
-  return latestScore(annotatedVolleys(state.volleys));
+  return latestScore(annotatedFrames(state.frames));
 }
 
 export function winner(state: State): Team | null {
@@ -259,18 +259,18 @@ export function winner(state: State): Team | null {
   }
 }
 
-export type AnnotatedVolley = Volley & {
+export type AnnotatedFrame = Frame & {
   diffA: number;
   diffB: number;
   bust: Team | null;
   score: Score;
 };
 
-export function annotatedVolleys(volleys: Volley[]): AnnotatedVolley[] {
-  return volleys.reduce<AnnotatedVolley[]>((annotatedVolleys, volley) => {
-    const score = latestScore(annotatedVolleys);
-    const diffA = Math.max(0, toPoints(volley.teamA) - toPoints(volley.teamB));
-    const diffB = Math.max(0, toPoints(volley.teamB) - toPoints(volley.teamA));
+export function annotatedFrames(frames: Frame[]): AnnotatedFrame[] {
+  return frames.reduce<AnnotatedFrame[]>((annotatedFrames, frame) => {
+    const score = latestScore(annotatedFrames);
+    const diffA = Math.max(0, toPoints(frame.teamA) - toPoints(frame.teamB));
+    const diffB = Math.max(0, toPoints(frame.teamB) - toPoints(frame.teamA));
     const newScoreA = score.teamA + diffA;
     const newScoreB = score.teamB + diffB;
     const bust = newScoreA > 21 ? 'teamA' : newScoreB > 21 ? 'teamB' : null;
@@ -278,8 +278,8 @@ export function annotatedVolleys(volleys: Volley[]): AnnotatedVolley[] {
       teamA: newScoreA > 21 ? 11 : newScoreA,
       teamB: newScoreB > 21 ? 11 : newScoreB,
     };
-    return annotatedVolleys.concat({
-      ...volley,
+    return annotatedFrames.concat({
+      ...frame,
       diffA,
       diffB,
       bust,
@@ -288,9 +288,9 @@ export function annotatedVolleys(volleys: Volley[]): AnnotatedVolley[] {
   }, []);
 }
 
-export function annotatedEphemeralVolley(state: State): AnnotatedVolley | null {
-  if (state.ephemeralVolley) {
-    return last(annotatedVolleys([...state.volleys, state.ephemeralVolley]));
+export function annotatedEphemeralFrame(state: State): AnnotatedFrame | null {
+  if (state.ephemeralFrame) {
+    return last(annotatedFrames([...state.frames, state.ephemeralFrame]));
   } else {
     return null;
   }
