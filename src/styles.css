@@ -1,0 +1,10 @@
+@tailwind base;
+
+html,
+body,
+#root {
+  @apply h-full font-body text-gray-7 bg-gray-0;
+}
+
+@tailwind components;
+@tailwind utilities;
