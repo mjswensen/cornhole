@@ -1,5 +1,3 @@
-// TODO: move this into src, and then you can use the object to generate your bag color options.....
-
 module.exports = {
   theme: {
     colors: {
@@ -18,6 +16,10 @@ module.exports = {
         background: '#c7e5c6',
         foreground: '#5e6d5f',
       },
+      danger: {
+        background: '#f9cfce',
+        foreground: '#835252',
+      },
       bags: {
         red: '#c27168',
         orange: '#c88b59',
@@ -28,6 +30,7 @@ module.exports = {
         purple: '#9d7a9a',
         pink: '#ad7499',
         white: '#ffffff',
+        gray: '#919191',
         black: '#2c3029',
       },
     },
