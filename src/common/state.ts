@@ -262,6 +262,19 @@ export function winner(state: State): Team | null {
   }
 }
 
+export function throwingFirst(state: State): Team | null {
+  let team: Team | null = null;
+  for (const frame of annotatedFrames(state.frames)) {
+    if (frame.diffA > frame.diffB) {
+      team = 'teamA';
+    }
+    if (frame.diffB > frame.diffA) {
+      team = 'teamB';
+    }
+  }
+  return team;
+}
+
 export type AnnotatedFrame = Frame & {
   diffA: number;
   diffB: number;
