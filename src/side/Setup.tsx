@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Alert from '../common/Alert';
+import Button from '../common/Button';
 
 async function init(
   pc: RTCPeerConnection,
@@ -45,29 +47,21 @@ const Setup: React.FC<{
 }> = ({ pc, encodedOffer, connected }) => {
   const [answer, setAnswer] = useState<string>();
   return (
-    <section className="container">
-      <div className="jumbotron">
-        <h1 className="display-3">
-          Cornhole
-          <span className="ml-3" role="img" aria-label="corn and hole emoji">
-            🌽🕳
-          </span>
-        </h1>
-      </div>
+    <section className="flex items-center flex-col justify-center min-h-full">
+      <h1 className="font-display text-6xl text-center mb-4">Cornhole</h1>
       {connected ? (
-        <div className="alert alert-success">
-          <h4 className="alert-heading">Connected!</h4>
-          <hr />
-          <p className="mb-0">Waiting for other side to connect...</p>
-        </div>
+        <Alert heading="Connected!">Waiting for other side to connect...</Alert>
       ) : answer ? (
-        <div>
-          <p>Paste this code into the game host:</p>
-          <textarea className="form-control" readOnly value={answer} />
+        <div className="rounded border border-gray-7 bg-gray-1 p-3">
+          <p className="mb-3">Paste this response code into the game host:</p>
+          <textarea
+            className="bg-gray-0 mt-2 border border-gray-7 rounded w-full"
+            readOnly
+            value={answer}
+          />
         </div>
       ) : (
-        <button
-          className="btn btn-primary btn-lg"
+        <Button
           onClick={() =>
             init(pc, encodedOffer).then(description =>
               setAnswer(btoa(JSON.stringify(description))),
@@ -75,7 +69,7 @@ const Setup: React.FC<{
           }
         >
           Join game
-        </button>
+        </Button>
       )}
     </section>
   );

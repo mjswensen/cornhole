@@ -8,6 +8,7 @@ import {
   currentScore,
   winner,
   annotatedEphemeralFrame,
+  throwingFirst,
 } from './state';
 
 it('properly calculates the current score and winner', () => {
@@ -28,6 +29,7 @@ it('properly calculates the current score and winner', () => {
     commitFrame(),
   ];
   const state1 = actions1.reduce(reducer, initialState);
+  expect(throwingFirst(state1)).toBe('teamB');
   const score1 = currentScore(state1);
   expect(score1).toEqual({
     teamA: 2,
@@ -51,6 +53,7 @@ it('properly calculates the current score and winner', () => {
     commitFrame(),
   ];
   const state2 = actions2.reduce(reducer, state1);
+  expect(throwingFirst(state2)).toBe('teamA');
   const score2 = currentScore(state2);
   expect(score2).toEqual({
     teamA: 11,

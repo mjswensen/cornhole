@@ -5,13 +5,16 @@ export type Team = 'teamA' | 'teamB';
 
 export enum Color {
   RED = 'red',
+  ORANGE = 'orange',
   YELLOW = 'yellow',
   GREEN = 'green',
   TEAL = 'teal',
   BLUE = 'blue',
+  PURPLE = 'purple',
+  PINK = 'pink',
+  WHITE = 'white',
   GRAY = 'gray',
   BLACK = 'black',
-  WHITE = 'white',
 }
 
 export type PlayerFrame = {
@@ -257,6 +260,19 @@ export function winner(state: State): Team | null {
   } else {
     return null;
   }
+}
+
+export function throwingFirst(state: State): Team | null {
+  let team: Team | null = null;
+  for (const frame of annotatedFrames(state.frames)) {
+    if (frame.diffA > frame.diffB) {
+      team = 'teamA';
+    }
+    if (frame.diffB > frame.diffA) {
+      team = 'teamB';
+    }
+  }
+  return team;
 }
 
 export type AnnotatedFrame = Frame & {
