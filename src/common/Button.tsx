@@ -2,21 +2,24 @@ import React from 'react';
 import classnames from 'classnames';
 
 const Button: React.FC<{
-  disabled: boolean;
+  disabled?: boolean;
   onClick: () => void;
-}> = ({ disabled, onClick, children }) => (
+  secondary?: boolean;
+  className?: string;
+}> = ({ disabled, onClick, secondary, className, children }) => (
   <button
     className={classnames(
       'border-2',
-      'border-primary',
+      secondary ? 'border-gray-7' : 'border-primary',
       'py-3',
       'px-4',
-      'text-primary',
+      secondary ? 'text-gray-7' : 'text-primary',
       'rounded',
       'transition',
-      'hover:bg-primary',
+      secondary ? 'hover:bg-gray-7' : 'hover:bg-primary',
       'hover:text-gray-0',
       { 'opacity-50': disabled },
+      className,
     )}
     {...{ disabled, onClick }}
   >

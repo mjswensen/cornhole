@@ -11,7 +11,7 @@ const OfferLink: React.FC<{
       <QRLink url={offerUrl} />
       <div className="p-3">
         <h2 className="text-xl">{title}</h2>
-        <p className="mt-2">Paste answer here:</p>
+        <p className="mt-2">Paste response code here:</p>
         <textarea
           className="bg-gray-0 mt-2 border border-gray-7 rounded w-full"
           onChange={evt => {
