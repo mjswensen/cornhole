@@ -7,13 +7,13 @@ const OfferLink: React.FC<{
   title: string;
 }> = ({ pc, offerUrl, title }) => {
   return (
-    <div className="card bg-light">
+    <div className="rounded border border-gray-7 bg-gray-1">
       <QRLink url={offerUrl} />
-      <div className="card-body">
-        <h2 className="card-title">{title}</h2>
-        <p>Paste answer here:</p>
+      <div className="p-3">
+        <h2 className="text-xl">{title}</h2>
+        <p className="mt-2">Paste answer here:</p>
         <textarea
-          className="form-control"
+          className="bg-gray-0 mt-2 border border-gray-7 rounded w-full"
           onChange={evt => {
             const answer = JSON.parse(atob(evt.target.value));
             pc.setRemoteDescription(answer);

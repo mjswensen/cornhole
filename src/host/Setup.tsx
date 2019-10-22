@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Alert from '../common/Alert';
 import Button from '../common/Button';
 import {
   Side,
@@ -152,7 +153,7 @@ const Setup: React.FC<{
               </tr>
             </tbody>
           </table>
-          <div className="text-center mt-4">
+          <div className="text-center mt-6">
             <Button
               disabled={initializing}
               onClick={() => {
@@ -173,41 +174,27 @@ const Setup: React.FC<{
     );
   } else {
     return (
-      <section className="h-100 d-flex flex-column justify-content-center">
-        <div className="d-flex justify-content-between">
+      <section className="flex items-center justify-between min-h-full p-6">
+        <div className="w-1/3">
           {offerUrl1 &&
             (connected1 ? (
-              <div className="w-25 p-3">
-                <div className="alert alert-success">
-                  <h4 className="alert-heading">Side 1 connected!</h4>
-                  <hr />
-                  <p className="mb-0">
-                    {state.names.side1.teamA} and {state.names.side1.teamB} are
-                    ready.
-                  </p>
-                </div>
-              </div>
+              <Alert heading="Side 1 connected!">
+                {state.names.side1.teamA} and {state.names.side1.teamB} are
+                ready.
+              </Alert>
             ) : (
-              <div className="w-25 p-3">
-                <OfferLink pc={pc1} offerUrl={offerUrl1} title="Side 1" />
-              </div>
+              <OfferLink pc={pc1} offerUrl={offerUrl1} title="Side 1" />
             ))}
+        </div>
+        <div className="w-1/3">
           {offerUrl2 &&
             (connected2 ? (
-              <div className="w-25 p-3">
-                <div className="alert alert-success">
-                  <h4 className="alert-heading">Side 2 connected!</h4>
-                  <hr />
-                  <p className="mb-0">
-                    {state.names.side2.teamA} and {state.names.side2.teamB} are
-                    ready.
-                  </p>
-                </div>
-              </div>
+              <Alert heading="Side 2 connected!">
+                {state.names.side2.teamA} and {state.names.side2.teamB} are
+                ready.
+              </Alert>
             ) : (
-              <div className="w-25 p-3">
-                <OfferLink pc={pc2} offerUrl={offerUrl2} title="Side 2" />
-              </div>
+              <OfferLink pc={pc2} offerUrl={offerUrl2} title="Side 2" />
             ))}
         </div>
       </section>

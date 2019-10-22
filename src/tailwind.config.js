@@ -14,6 +14,10 @@ module.exports = {
         7: '#42483e',
       },
       primary: '#9b5c83',
+      success: {
+        background: '#c7e5c6',
+        foreground: '#5e6d5f',
+      },
       bags: {
         red: '#c27168',
         orange: '#c88b59',
