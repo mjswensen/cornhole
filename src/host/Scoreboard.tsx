@@ -58,7 +58,7 @@ const Scoreboard: React.FC<{
               {textFrame(
                 state.names[frame.throwingSide].teamA,
                 frame.teamA.onBoard,
-                frame.teamA.onBoard,
+                frame.teamA.inHole,
               )}
             </span>
             <span>
