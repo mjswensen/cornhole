@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import QRLink from './QRLink';
+import { decode } from '../common/answer';
 
 const OfferLink: React.FC<{
   pc: RTCPeerConnection;
   offerUrl: string;
   title: string;
 }> = ({ pc, offerUrl, title }) => {
+  const [value, setValue] = useState('');
+  const [erred, setErred] = useState(false);
   return (
     <div className="rounded border border-gray-7 bg-gray-1">
       <QRLink url={offerUrl} />
@@ -14,11 +17,24 @@ const OfferLink: React.FC<{
         <p className="mt-2">Paste response code here:</p>
         <textarea
           className="bg-gray-0 mt-2 border border-gray-7 rounded w-full"
+          value={value}
           onChange={evt => {
-            const answer = JSON.parse(atob(evt.target.value));
-            pc.setRemoteDescription(answer);
+            const { value } = evt.target;
+            setErred(false);
+            setValue(value);
+            try {
+              const answer = decode(value);
+              pc.setRemoteDescription(answer as RTCSessionDescription);
+            } catch {
+              setErred(true);
+            }
           }}
         ></textarea>
+        {erred ? (
+          <div className="mt-2 border border-danger-foreground rounded bg-danger-background text-danger-foreground p-1">
+            Something didn't look right with that code. Please try again.
+          </div>
+        ) : null}
       </div>
     </div>
   );

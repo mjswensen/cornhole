@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Alert from '../common/Alert';
 import Button from '../common/Button';
+import { encode } from '../common/answer';
 
 async function init(
   pc: RTCPeerConnection,
@@ -63,9 +64,11 @@ const Setup: React.FC<{
       ) : (
         <Button
           onClick={() =>
-            init(pc, encodedOffer).then(description =>
-              setAnswer(btoa(JSON.stringify(description))),
-            )
+            init(pc, encodedOffer).then(description => {
+              if (description) {
+                setAnswer(encode(description));
+              }
+            })
           }
         >
           Join game
