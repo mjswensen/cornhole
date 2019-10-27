@@ -32,6 +32,9 @@ const OfferLink: React.FC<{
         ></textarea>
         {erred ? (
           <div className="mt-2 border border-danger-foreground rounded bg-danger-background text-danger-foreground p-1">
+            <span className="mr-1" role="img" aria-label="crying face">
+              😢
+            </span>
             Something didn't look right with that code. Please try again.
           </div>
         ) : null}

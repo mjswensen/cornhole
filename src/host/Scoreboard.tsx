@@ -137,12 +137,26 @@ const Scoreboard: React.FC<{
           <ColorIndicator color={state.colors.teamA} className="mr-3" />
           {state.names.side1.teamA} / {state.names.side2.teamA}
           {throwingTeam === 'teamA' ? (
-            <span className="text-gray-4 ml-3">throwing first</span>
+            <span
+              className="ml-3 cursor-default"
+              role="img"
+              aria-label="corn"
+              title="Throwing first"
+            >
+              🌽
+            </span>
           ) : null}
         </div>
         <div className="flex items-center">
           {throwingTeam === 'teamB' ? (
-            <span className="text-gray-4 mr-3">throwing first</span>
+            <span
+              className="mr-3 cursor-default"
+              role="img"
+              aria-label="corn"
+              title="Throwing first"
+            >
+              🌽
+            </span>
           ) : null}
           {state.names.side1.teamB} / {state.names.side2.teamB}
           <ColorIndicator color={state.colors.teamB} className="ml-3" />
