@@ -9,6 +9,7 @@ import {
 } from '../common/state';
 import ColorIndicator from '../common/ColorIndicator';
 import Diff from './Diff';
+import Winner from '../common/Winner';
 
 const Scoreboard: React.FC<{
   state: State;
@@ -148,6 +149,7 @@ const Scoreboard: React.FC<{
           <span className="text-6xl ml-5">{score.teamB}</span>
         </div>
       </div>
+      <Winner state={state} />
     </section>
   );
 };

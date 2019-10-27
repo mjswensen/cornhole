@@ -11,6 +11,7 @@ import {
 } from '../common/state';
 import Button from '../common/Button';
 import ColorIndicator from '../common/ColorIndicator';
+import Winner from '../common/Winner';
 import Stepper from './Stepper';
 
 const Controller: React.FC<{
@@ -131,6 +132,7 @@ const Controller: React.FC<{
           </div>
         </>
       )}
+      <Winner state={state} opaque={true} />
     </section>
   );
 };
