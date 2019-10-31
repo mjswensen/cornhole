@@ -1,7 +1,0 @@
-{
-  "name": "cornhole",
-  "version": 2,
-  "alias": "cornhole.site",
-  "builds": [{ "src": "build/**", "use": "@now/static" }],
-  "routes": [{ "src": "/(.*)", "dest": "build/$1" }]
-}
