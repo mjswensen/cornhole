@@ -1,0 +1,4 @@
+This is a Brave Rewards publisher verification file.
+
+Domain: cornhole.link
+Token: e3a7a911e4a58c226c0e233f96d04e4eb9edb341c9c218f98485761a3c19ac72
