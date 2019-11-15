@@ -1,35 +1,44 @@
 import React, { useState } from 'react';
-import QRLink from './QRLink';
 import { decode } from '../common/answer';
+import QrReader from 'react-qr-reader';
+import Button from '../common/Button';
+import QR from '../common/QR';
 
 const OfferLink: React.FC<{
   pc: RTCPeerConnection;
   offerUrl: string;
   title: string;
 }> = ({ pc, offerUrl, title }) => {
-  const [value, setValue] = useState('');
   const [erred, setErred] = useState(false);
+  const [scanning, setScanning] = useState(false);
   return (
     <div className="rounded border border-gray-7 bg-gray-1">
-      <QRLink url={offerUrl} />
-      <div className="p-3">
-        <h2 className="text-xl">{title}</h2>
-        <p className="mt-2">Paste response code here:</p>
-        <textarea
-          className="bg-gray-0 mt-2 border border-gray-7 rounded w-full"
-          value={value}
-          onChange={evt => {
-            const { value } = evt.target;
-            setErred(false);
-            setValue(value);
-            try {
-              const answer = decode(value);
-              pc.setRemoteDescription(answer as RTCSessionDescription);
-            } catch {
-              setErred(true);
+      {scanning ? (
+        <QrReader
+          delay={300}
+          onError={() => {
+            setErred(true);
+          }}
+          onScan={(data: unknown) => {
+            if (typeof data === 'string') {
+              setErred(false);
+              try {
+                const answer = decode(data);
+                pc.setRemoteDescription(answer as RTCSessionDescription);
+              } catch {
+                setErred(true);
+              }
             }
           }}
-        ></textarea>
+          style={{ width: '100%' }}
+        />
+      ) : (
+        <a href={offerUrl} target="_blank" rel="noopener noreferrer">
+          <QR className="rounded-t" data={offerUrl} alt="Join game" />
+        </a>
+      )}
+      <div className="p-3">
+        <h2 className="text-xl">{title}</h2>
         {erred ? (
           <div className="mt-2 border border-danger-foreground rounded bg-danger-background text-danger-foreground p-1">
             <span className="mr-1" role="img" aria-label="crying face">
@@ -38,6 +47,26 @@ const OfferLink: React.FC<{
             Something didn't look right with that code. Please try again.
           </div>
         ) : null}
+        {scanning ? (
+          <Button
+            className="mt-2"
+            secondary
+            onClick={() => {
+              setScanning(false);
+            }}
+          >
+            Cancel
+          </Button>
+        ) : (
+          <Button
+            className="mt-2"
+            onClick={() => {
+              setScanning(true);
+            }}
+          >
+            Scan response
+          </Button>
+        )}
       </div>
     </div>
   );

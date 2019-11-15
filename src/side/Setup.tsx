@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Alert from '../common/Alert';
 import Button from '../common/Button';
 import { encode } from '../common/answer';
+import QR from '../common/QR';
 
 async function init(
   pc: RTCPeerConnection,
@@ -48,18 +49,14 @@ const Setup: React.FC<{
 }> = ({ pc, encodedOffer, connected }) => {
   const [answer, setAnswer] = useState<string>();
   return (
-    <section className="flex items-center flex-col justify-center min-h-full">
+    <section className="flex items-center flex-col justify-center min-h-full p-4">
       <h1 className="font-display text-6xl text-center mb-4">Cornhole</h1>
       {connected ? (
         <Alert heading="Connected!">Waiting for other side to connect...</Alert>
       ) : answer ? (
-        <div className="rounded border border-gray-7 bg-gray-1 p-3">
-          <p className="mb-3">Paste this response code into the game host:</p>
-          <textarea
-            className="bg-gray-0 mt-2 border border-gray-7 rounded w-full"
-            readOnly
-            value={answer}
-          />
+        <div className="rounded border border-gray-7 bg-gray-1">
+          <QR className="rounded-t" data={answer} alt="Response code" />
+          <p className="p-3">Scan this response code into the game host.</p>
         </div>
       ) : (
         <Button
