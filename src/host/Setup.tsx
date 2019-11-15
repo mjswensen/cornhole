@@ -15,18 +15,12 @@ import OfferLink from './OfferLink';
 async function init(
   pc: RTCPeerConnection,
 ): Promise<RTCSessionDescription | null> {
-  const ICE_GATHERING_TIMEOUT = 2000;
-
   const iceGatheringComplete = new Promise(resolve => {
     pc.addEventListener('icegatheringstatechange', () => {
       if (pc.iceGatheringState === 'complete') {
         resolve();
       }
     });
-  });
-
-  const iceGatheringTimeout = new Promise(resolve => {
-    setTimeout(() => resolve(), ICE_GATHERING_TIMEOUT);
   });
 
   const signalingStatusComplete = new Promise(resolve => {
@@ -41,10 +35,7 @@ async function init(
     pc.setLocalDescription(offer);
   });
 
-  await Promise.all([
-    Promise.race([iceGatheringComplete, iceGatheringTimeout]),
-    signalingStatusComplete,
-  ]);
+  await Promise.all([iceGatheringComplete, signalingStatusComplete]);
 
   return pc.localDescription;
 }
