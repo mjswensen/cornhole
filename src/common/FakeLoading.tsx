@@ -6,7 +6,7 @@ const FakeLoading: React.FC<{ className?: string }> = ({ className }) => {
   const [progress, setProgress] = useState(0);
   useAnimationFrame(deltaTime => {
     setProgress(prevProgress =>
-      Math.min(prevProgress + deltaTime / 45000, 0.95),
+      Math.max(0.03, Math.min(prevProgress + deltaTime / 45000, 0.95)),
     );
   });
   return <Loading className={className} progress={progress} />;
