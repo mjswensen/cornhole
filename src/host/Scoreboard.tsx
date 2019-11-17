@@ -5,7 +5,6 @@ import {
   currentScore,
   annotatedEphemeralFrame,
   annotatedFrames,
-  throwingFirst,
 } from '../common/state';
 import ColorIndicator from '../common/ColorIndicator';
 import Diff from './Diff';
@@ -19,7 +18,6 @@ const Scoreboard: React.FC<{
   const previousFrames = annotatedFrames(state.frames)
     .slice()
     .reverse();
-  const throwingTeam = throwingFirst(state);
   function textFrame(
     name: string,
     onBoard: number,
@@ -136,28 +134,8 @@ const Scoreboard: React.FC<{
           <span className="text-6xl mr-5">{score.teamA}</span>
           <ColorIndicator color={state.colors.teamA} className="mr-3" />
           {state.names.side1.teamA} / {state.names.side2.teamA}
-          {throwingTeam === 'teamA' ? (
-            <span
-              className="ml-3 cursor-default"
-              role="img"
-              aria-label="corn"
-              title="Throwing first"
-            >
-              🌽
-            </span>
-          ) : null}
         </div>
         <div className="flex items-center">
-          {throwingTeam === 'teamB' ? (
-            <span
-              className="mr-3 cursor-default"
-              role="img"
-              aria-label="corn"
-              title="Throwing first"
-            >
-              🌽
-            </span>
-          ) : null}
           {state.names.side1.teamB} / {state.names.side2.teamB}
           <ColorIndicator color={state.colors.teamB} className="ml-3" />
           <span className="text-6xl ml-5">{score.teamB}</span>

@@ -8,6 +8,7 @@ import {
   commitFrame,
   cancelFrame,
   Team,
+  throwingFirst,
 } from '../common/state';
 import Button from '../common/Button';
 import ColorIndicator from '../common/ColorIndicator';
@@ -44,6 +45,7 @@ const Controller: React.FC<{
       );
     }
   }
+  const first = throwingFirst(state);
   return (
     <section
       className={classnames(
@@ -71,13 +73,22 @@ const Controller: React.FC<{
           </Button>
         </div>
       ) : state.ephemeralFrame.throwingSide === side ? (
-        <p className="text-center">Your side is currently throwing.</p>
+        <>
+          <p className="text-center">Your side is currently throwing.</p>
+          {first && (
+            <div className="mt-4 flex justify-center items-center">
+              <ColorIndicator color={state.colors[first]} className="mr-2" />
+              <span>{state.names[side][first]} throws first.</span>
+            </div>
+          )}
+        </>
       ) : (
         <>
           <div className="rounded border border-gray-7 bg-gray-1 p-3 mb-3 w-full">
             <h2 className="text-xl mb-3 flex items-center">
+              <ColorIndicator color={state.colors.teamA} className="mr-3" />
               {state.names[oppositeSide].teamA}
-              <ColorIndicator color={state.colors.teamA} className="ml-3" />
+              {first === 'teamA' ? ' (throws first)' : null}
             </h2>
             <p className="mb-2">On the board:</p>
             <Stepper
@@ -94,8 +105,9 @@ const Controller: React.FC<{
           </div>
           <div className="rounded border border-gray-7 bg-gray-1 p-3 mb-3 w-full">
             <h2 className="text-xl mb-3 flex items-center">
+              <ColorIndicator color={state.colors.teamB} className="mr-3" />
               {state.names[oppositeSide].teamB}
-              <ColorIndicator color={state.colors.teamB} className="ml-3" />
+              {first === 'teamB' ? ' (throws first)' : null}
             </h2>
             <p className="mb-2">On the board:</p>
             <Stepper
