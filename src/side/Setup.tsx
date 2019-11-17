@@ -3,6 +3,7 @@ import Alert from '../common/Alert';
 import Button from '../common/Button';
 import { encode } from '../common/answer';
 import QR from '../common/QR';
+import FakeLoading from '../common/FakeLoading';
 
 async function init(
   pc: RTCPeerConnection,
@@ -39,6 +40,8 @@ const Setup: React.FC<{
   connected: boolean;
 }> = ({ pc, encodedOffer, connected }) => {
   const [answer, setAnswer] = useState<string>();
+  const [initializing, setInitializing] = useState(false);
+
   return (
     <section className="flex items-center flex-col justify-center min-h-full p-4">
       <h1 className="font-display text-6xl text-center mb-4">Cornhole</h1>
@@ -50,17 +53,24 @@ const Setup: React.FC<{
           <p className="p-3">Scan this response code into the game host.</p>
         </div>
       ) : (
-        <Button
-          onClick={() =>
-            init(pc, encodedOffer).then(description => {
-              if (description) {
-                setAnswer(encode(description));
-              }
-            })
-          }
-        >
-          Join game
-        </Button>
+        <>
+          <Button
+            disabled={initializing}
+            onClick={() => {
+              init(pc, encodedOffer).then(description => {
+                if (description) {
+                  setAnswer(encode(description));
+                }
+              });
+              setInitializing(true);
+            }}
+          >
+            Join game
+          </Button>
+          <div className="mt-1 h-1">
+            {initializing ? <FakeLoading /> : null}
+          </div>
+        </>
       )}
     </section>
   );

@@ -11,6 +11,7 @@ import {
 import ColorPicker from './ColorPicker';
 import Input from './Input';
 import OfferLink from './OfferLink';
+import FakeLoading from '../common/FakeLoading';
 
 async function init(
   pc: RTCPeerConnection,
@@ -159,6 +160,9 @@ const Setup: React.FC<{
             >
               Start game
             </Button>
+            <div className="mt-1 h-1">
+              {initializing ? <FakeLoading /> : null}
+            </div>
           </div>
         </form>
       </section>

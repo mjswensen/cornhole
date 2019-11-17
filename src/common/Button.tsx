@@ -8,6 +8,7 @@ const Button: React.FC<{
   className?: string;
 }> = ({ disabled, onClick, secondary, className, children }) => (
   <button
+    disabled={disabled}
     className={classnames(
       'border-2',
       secondary ? 'border-gray-7' : 'border-primary',
@@ -18,7 +19,8 @@ const Button: React.FC<{
       'transition',
       secondary ? 'hover:bg-gray-7' : 'hover:bg-primary',
       'hover:text-gray-0',
-      { 'opacity-50': disabled },
+      disabled && 'opacity-50',
+      disabled && 'pointer-events-none',
       className,
     )}
     {...{ disabled, onClick }}
