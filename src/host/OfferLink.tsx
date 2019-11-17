@@ -16,6 +16,7 @@ const OfferLink: React.FC<{
       {scanning ? (
         <QrReader
           delay={300}
+          facingMode="user"
           onError={() => {
             setErred(true);
           }}
